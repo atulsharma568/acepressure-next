@@ -1,0 +1,15 @@
+{
+  "version": "1.2.0",
+  "date": "2026-10-11",
+  "result": "passed",
+  "test": "tests/launch_browser_check.py",
+  "scope": [
+    "review approval",
+    "supporter merge",
+    "design studio and four previews",
+    "QR and same amount URI parameters",
+    "mobile layout",
+    "expiry and late approval"
+  ],
+  "real_payment_apps_tested": false
+}

@@ -1,0 +1,46 @@
+.venv/
+.env
+data/
+__pycache__/
+.pytest_cache/
+*.pyc
+data-demo/
+legacy/original-uploads/
+
+configuration-backups/
+web/node_modules/
+web/.next/
+web/.env.local
+
+# Private configuration and secrets
+.env
+.env.*
+**/.env
+**/.env.*
+config/
+configuration-backups/
+*.pem
+*.key
+
+# Dependencies and generated files
+.venv/
+node_modules/
+.next/
+out/
+__pycache__/
+*.pyc
+*.tsbuildinfo
+
+# Donation records and backups
+data/
+data-demo/
+backups/
+*.sqlite*
+*.db
+*.dump
+*.log
+
+# Archives
+*.zip
+*.rar
+*.7z

@@ -1,0 +1,2 @@
+# Optional shadow migration tooling only; not part of the Flask requirements.
+psycopg[binary]>=3.2,<4

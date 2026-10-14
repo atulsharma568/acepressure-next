@@ -1,0 +1,62 @@
+Version 1.6.0: one Sound library for alert sounds and memes (Admin -> Sound library); Edge and Piper voices speak in OBS.
+Click "Add starter sounds" there for 8 free sound effects made for AcePressure.
+Also new: a checklist that says exactly why tips are paused. Full list:
+docs\CHANGELOG.md
+
+UPGRADING? Close the AcePressure window (and stop the 'AcePressure Tipping'
+task if you installed it) before copying the new files, then run Install.bat
+and Start.bat. To copy, put everything inside the zip's AcePressure folder into
+your existing install and replace the files. Your .env, .venv and data folders
+are not in the zip, so they stay as they are, and Install.bat keeps your
+password. On first start AcePressure moves your sounds into the Sound library
+by itself and saves a copy of your database first:
+data\backups\before-1.6.0-sound-library.sqlite3. If an OBS source stays silent
+afterwards, right-click it > Properties > Refresh cache of current page.
+
+AcePressure Tipping System - START HERE
+
+1. Extract the entire AcePressure folder to D:\AcePressure-Tips.
+2. Install stable 64-bit Python 3.12+ with the Python Launcher from python.org.
+3. Run Install.bat and choose your admin password.
+4. Run Start_Demo.bat. Leave its window open.
+5. Open http://localhost:8766/admin and sign in.
+6. Start a stream session.
+7. Open http://localhost:8766/ and create a demo tip.
+8. Admin > Pending payments > Simulate payment.
+9. Create a goal; get overlay URLs from Admin > OBS.
+
+Demo mode never takes money. Live mode is Start.bat on port 8765.
+
+Go live for free (Tailscale Funnel, no domain needed; docs\TAILSCALE_FUNNEL.md):
+1. Run Setup_Tailscale_URL.bat. Approve Tailscale in your browser if it asks.
+2. Restart: close the AcePressure window (or end the 'AcePressure Tipping'
+   task), then run Start.bat.
+3. Admin > Settings: enter your UPI ID and payee name.
+4. Paytm bridge: open /admin/paytm, generate a token, enter your bank marker
+   and click Enable bridge.
+5. Phone automation: send each Paytm notification to your URL + /api/bridge/paytm
+   with that token.
+6. OBS links: copy the overlay URLs from Admin > OBS into your Browser Sources.
+7. Start a stream session.
+8. Send yourself a small test tip.
+If your tip page says "Tips open soon" or that you aren't taking new tips,
+open Admin: the red line names the missing step.
+
+Before live use, read README.md and:
+- docs\DEPLOYMENT.md - detailed Windows / HTTPS hosting
+- docs\IPHONE.md - bank SMS / Shortcuts setup
+- docs\OBS.md - horizontal, vertical, audio, goals and dock
+- docs\MIGRATION.md - backups and your old OBS sources
+- docs\SECURITY.md - what SMS verification can/cannot prove
+- docs\OPERATIONS.md - backups, restore and troubleshooting
+- docs\TESTING.md - tests run and device checks still needed
+
+Live payment verification is OFF by default. Configure your real UPI recipient,
+stable HTTPS hostname and the Paytm bridge (or a tested bank SMS Shortcut)
+locally; Admin > Settings > Payment verification shows what is still missing.
+Never share your .env, bridge token, bank credentials or private OBS source
+URLs.
+
+Your 12 original files are backed up byte-for-byte in legacy\original-uploads.
+No original OBS setup was overwritten. These exports may contain private alert
+URLs; keep the whole package private.

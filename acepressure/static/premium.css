@@ -1,0 +1,1953 @@
+/* ============================================================================
+   AcePressure Premium Theme (v1.3.0)
+   -----------------------------------------------------------------------------
+   Layered on top of style.css. Elevates the whole UI to a "pro streamer /
+   premium service" aesthetic: deeper palette, glass-morphism surfaces, premium
+   type scale with Devanagari fallback, animated gradient accents, smooth
+   micro-interactions, confetti support.
+
+   Load order in templates:  style.css  →  premium.css
+   Safe to disable: remove the <link> tag and the base style.css still renders.
+   ============================================================================ */
+
+/* Inter ships with the app (static/fonts, SIL Open Font License), so every PC renders the same type. */
+@font-face{font-family:'Inter';src:url('/static/fonts/InterVariable.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
+
+/* -------- Design tokens -------- */
+:root {
+    --bg-0: #07070b;
+    --bg-1: #0d0e14;
+    --bg-2: #121420;
+    --surface: rgba(22, 24, 34, 0.72);
+    --surface-strong: rgba(28, 30, 42, 0.92);
+    --surface-border: rgba(255, 255, 255, 0.08);
+    --surface-border-strong: rgba(255, 255, 255, 0.14);
+
+    --ink: #f5f3ee;
+    --ink-dim: #a7a9b8;
+    --ink-mute: #6b6e82;
+
+    --accent: #ff4660;          /* primary crimson, kept for brand continuity */
+    --accent-2: #ff8a3d;         /* warm sunset for gradients */
+    --accent-3: #ffd166;         /* gold for premium highlights */
+    --accent-cool: #7a5cff;      /* cool violet for depth */
+    --accent-mint: #4ad4a3;      /* success */
+
+    --glow-accent: 0 0 40px -8px rgba(255, 70, 96, 0.55);
+    --glow-gold:   0 0 60px -12px rgba(255, 209, 102, 0.45);
+    --glow-cool:   0 0 60px -12px rgba(122, 92, 255, 0.45);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.35), 0 8px 24px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.4), 0 24px 60px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 10px 40px rgba(0, 0, 0, 0.5), 0 40px 120px rgba(0, 0, 0, 0.6);
+
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+
+    --font-sans: 'Inter', 'Segoe UI Variable', 'Segoe UI', system-ui, 'Noto Sans', sans-serif;
+    --font-hindi: 'Noto Sans Devanagari', 'Mangal', 'Nirmala UI', 'Hind', 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+    --font-display: 'Inter', 'Segoe UI Variable', system-ui, sans-serif;
+}
+
+/* -------- Global base lift -------- */
+html, body {
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv01', 'cv02', 'ss01';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+body {
+    background: var(--bg-0);
+    color: var(--ink);
+    background-image:
+        radial-gradient(900px 600px at 10% -10%, rgba(255, 70, 96, 0.08), transparent 60%),
+        radial-gradient(1200px 800px at 110% 10%, rgba(122, 92, 255, 0.07), transparent 60%),
+        radial-gradient(700px 500px at 50% 110%, rgba(255, 209, 102, 0.05), transparent 60%),
+        linear-gradient(180deg, #07070b 0%, #0a0b11 100%);
+    min-height: 100vh;
+}
+/* Make Devanagari glyphs render crisply when mixed into Hinglish messages */
+:lang(hi), [lang="hi"], .hindi { font-family: var(--font-hindi); }
+
+h1, h2, h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+}
+h1 { font-weight: 800; }
+h2 { font-weight: 700; }
+.tnum, b, .metric b { font-variant-numeric: tabular-nums; }
+
+/* -------- Public tip page -------- */
+.tip-focused {
+    background: transparent;
+}
+.tip-focused .site-header {
+    padding: 24px 36px;
+    border-bottom: 1px solid var(--surface-border);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    background: linear-gradient(180deg, rgba(13, 14, 20, 0.72), rgba(13, 14, 20, 0.35));
+    position: sticky; top: 0; z-index: 10;
+}
+.tip-focused .wordmark {
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    background: linear-gradient(100deg, #fff 0%, #fff 55%, var(--accent-3) 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.tip-focused .wordmark span {
+    background: linear-gradient(100deg, var(--accent) 0%, var(--accent-2) 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.tip-focused .creator-mark {
+    width: 92px; height: 92px; line-height: 90px;
+    border-radius: 24px; transform: none;
+    background: linear-gradient(140deg, #3a1420 0%, #1a0d14 100%);
+    border: 1px solid rgba(255, 70, 96, 0.4);
+    box-shadow: var(--glow-accent), inset 0 1px 0 rgba(255, 255, 255, 0.06), var(--shadow-md);
+    font-weight: 900;
+}
+.tip-focused .creator-mark span {
+    background: linear-gradient(100deg, var(--accent-3), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.tip-focused .creator h1 {
+    font-size: clamp(32px, 4vw, 48px);
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+    background: linear-gradient(180deg, #fff 0%, #d5d7e0 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.tip-focused .creator .creator-kicker {
+    color: var(--accent-3);
+    letter-spacing: 3px;
+    font-weight: 800;
+    font-size: 11px;
+    text-shadow: 0 0 20px rgba(255, 209, 102, 0.4);
+}
+.tip-focused .creator p {
+    color: var(--ink-dim);
+    font-size: 15px;
+    line-height: 1.65;
+}
+.creator-detail span {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--surface-border);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-weight: 600;
+    color: var(--ink-dim);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+.creator-detail span:hover {
+    border-color: var(--accent);
+    color: var(--ink);
+    box-shadow: var(--glow-accent);
+}
+
+/* -------- Tip card: the hero surface -------- */
+.tip-focused .tip-card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--surface-border-strong);
+    border-radius: var(--radius-xl);
+    padding: 36px;
+    backdrop-filter: blur(22px) saturate(140%);
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.04) inset,
+        0 60px 120px -40px rgba(0, 0, 0, 0.9),
+        0 20px 40px -20px rgba(255, 70, 96, 0.25);
+    overflow: hidden;
+    isolation: isolate;
+}
+.tip-focused .tip-card::before {
+    content: '';
+    position: absolute; inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(from 180deg at 50% 50%, rgba(255, 70, 96, 0.6), rgba(122, 92, 255, 0.3), rgba(255, 209, 102, 0.4), rgba(255, 70, 96, 0.6));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0.9;
+    animation: ace-rotate 14s linear infinite;
+    z-index: -1;
+}
+.tip-focused .tip-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(600px 300px at 50% 0%, rgba(255, 70, 96, 0.14), transparent 60%);
+    pointer-events: none; z-index: -1;
+}
+@keyframes ace-rotate { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+    .tip-focused .tip-card::before { animation: none; }
+}
+
+.tip-focused .tip-card h2 {
+    font-size: 24px; font-weight: 800;
+    background: linear-gradient(100deg, #fff, #e6c88d);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.section-line > span {
+    letter-spacing: 2px !important;
+    font-size: 10px !important;
+    color: var(--accent-3) !important;
+    font-weight: 700;
+}
+
+/* Inputs */
+input, textarea, select {
+    background: rgba(10, 11, 16, 0.72) !important;
+    border: 1px solid var(--surface-border) !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 13px 14px !important;
+    color: var(--ink);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+input:hover, textarea:hover, select:hover {
+    border-color: var(--surface-border-strong) !important;
+}
+input:focus, textarea:focus, select:focus {
+    outline: none !important;
+    border-color: rgba(255, 70, 96, 0.75) !important;
+    box-shadow: 0 0 0 4px rgba(255, 70, 96, 0.15), 0 0 30px -8px rgba(255, 70, 96, 0.5) !important;
+    background: rgba(10, 11, 16, 0.92) !important;
+}
+
+label { font-weight: 600; color: var(--ink); letter-spacing: 0.2px; }
+
+/* Amount input: hero component */
+.tip-focused .amount-input {
+    background: linear-gradient(135deg, rgba(10, 11, 16, 0.9) 0%, rgba(26, 10, 18, 0.9) 100%);
+    border: 1px solid rgba(255, 70, 96, 0.3);
+    border-radius: var(--radius-md);
+    padding: 2px 20px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 10px 30px -10px rgba(255, 70, 96, 0.3);
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.tip-focused .amount-input:focus-within {
+    border-color: rgba(255, 70, 96, 0.75);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 0 4px rgba(255, 70, 96, 0.15), 0 20px 40px -10px rgba(255, 70, 96, 0.4);
+}
+.tip-focused .amount-input span {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 28px; font-weight: 800;
+}
+.tip-focused .amount-input input {
+    background: transparent !important;
+    border: 0 !important;
+    padding: 14px 0 !important;
+    font-size: 32px !important;
+    font-weight: 700;
+    box-shadow: none !important;
+    letter-spacing: -0.02em;
+}
+
+/* Preset amount buttons */
+.tip-focused .presets {
+    gap: 10px;
+    margin-top: 14px;
+}
+.tip-focused .presets button {
+    position: relative;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--surface-border);
+    border-radius: 12px;
+    padding: 13px 10px;
+    font-weight: 700;
+    color: var(--ink);
+    transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.4), border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+.tip-focused .presets button::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255, 70, 96, 0), rgba(255, 70, 96, 0.3));
+    opacity: 0; transition: opacity 0.3s ease;
+}
+.tip-focused .presets button:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 70, 96, 0.5);
+    box-shadow: 0 10px 25px -10px rgba(255, 70, 96, 0.5);
+}
+.tip-focused .presets button:hover::before { opacity: 1; }
+.tip-focused .presets button.selected {
+    background: linear-gradient(135deg, rgba(255, 70, 96, 0.25), rgba(255, 138, 61, 0.15));
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 30px -10px rgba(255, 70, 96, 0.6);
+}
+
+/* Voice & sound selector cards */
+.voice-choices, .sound-choices {
+    gap: 8px;
+    padding: 4px;
+}
+.voice-card, .sound-choices button {
+    background: rgba(255, 255, 255, 0.025) !important;
+    border: 1px solid var(--surface-border) !important;
+    border-radius: 12px !important;
+    padding: 10px 14px !important;
+    color: var(--ink) !important;
+    transition: all 0.2s ease;
+}
+.voice-card:hover, .sound-choices button:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: var(--surface-border-strong) !important;
+    transform: translateY(-1px);
+}
+.voice-card.selected, .sound-choices button.selected {
+    background: linear-gradient(135deg, rgba(255, 70, 96, 0.25), rgba(255, 138, 61, 0.15)) !important;
+    border-color: var(--accent) !important;
+    color: #fff !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 6px 20px -8px rgba(255, 70, 96, 0.5);
+}
+
+/* v1.5.4 — Friendly voice picker: gender-grouped cards with icon + preview speaker */
+.voice-card {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    text-align: left;
+    line-height: 1.2;
+    min-height: 56px;
+    position: relative;
+}
+.voice-card .voice-gender-icon {
+    font-size: 1.4em;
+    line-height: 1;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    flex-shrink: 0;
+}
+.voice-card .voice-friendly-name {
+    flex: 1;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    font-size: 14px;
+}
+.voice-card .voice-preview-spk {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 15px;
+    opacity: 0.75;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+    user-select: none;
+}
+.voice-card .voice-preview-spk:hover {
+    background: rgba(255, 70, 96, 0.25);
+    opacity: 1;
+    transform: scale(1.08);
+}
+.voice-card .voice-preview-spk:active {
+    transform: scale(0.92);
+}
+/* Gender-coded left border + icon tint. Subtle — supports group recognition without overpowering. */
+.voice-card.voice-male .voice-gender-icon {
+    color: #7cc3ff;
+    background: rgba(59, 130, 246, 0.18);
+}
+.voice-card.voice-female .voice-gender-icon {
+    color: #ff9fc3;
+    background: rgba(236, 72, 153, 0.18);
+}
+.voice-card.voice-any .voice-gender-icon {
+    color: #b4bdc9;
+    background: rgba(148, 163, 184, 0.18);
+}
+.voice-card.voice-male { border-left: 3px solid rgba(59, 130, 246, 0.6) !important; }
+.voice-card.voice-female { border-left: 3px solid rgba(236, 72, 153, 0.6) !important; }
+.voice-card.voice-any { border-left: 3px solid rgba(148, 163, 184, 0.5) !important; }
+
+/* Primary CTA — the "pay" button */
+.primary {
+    position: relative;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    border: 0 !important;
+    color: #fff !important;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    padding: 16px 20px !important;
+    border-radius: 14px !important;
+    overflow: hidden;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 10px 30px -8px rgba(255, 70, 96, 0.6), 0 20px 60px -20px rgba(255, 138, 61, 0.5);
+    transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.4), box-shadow 0.25s ease;
+}
+.primary::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.35) 50%, transparent 80%);
+    transform: translateX(-100%);
+    transition: transform 0.8s ease;
+}
+.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 14px 40px -8px rgba(255, 70, 96, 0.75), 0 30px 80px -20px rgba(255, 138, 61, 0.6);
+}
+.primary:hover::after { transform: translateX(100%); }
+.primary:active { transform: translateY(0); }
+
+/* Secondary / subtle buttons */
+.subtle {
+    background: transparent !important;
+    border: 1px solid var(--surface-border) !important;
+    color: var(--ink-dim) !important;
+    border-radius: 10px !important;
+    transition: all 0.2s ease;
+}
+.subtle:hover {
+    border-color: var(--surface-border-strong) !important;
+    color: var(--ink) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Supporters card */
+.tip-focused .supporters {
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-lg);
+    padding: 24px 28px;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: var(--shadow-md);
+}
+.supporter-row {
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    transition: background 0.2s ease;
+    border-radius: 8px;
+    padding-left: 10px; margin-left: -10px;
+    padding-right: 10px; margin-right: -10px;
+}
+.supporter-row:hover {
+    background: rgba(255, 255, 255, 0.025);
+}
+.supporter-row:last-child { border-bottom: 0; }
+.supporter-row .rank {
+    background: linear-gradient(135deg, var(--accent-3), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    letter-spacing: 1px;
+    min-width: 28px;
+}
+.supporter-row:nth-child(1) .rank { font-size: 15px; }
+.supporter-row:nth-child(2) .rank { opacity: 0.85; }
+.supporter-row:nth-child(3) .rank { opacity: 0.7; }
+.supporter-row b {
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(100deg, #fff, var(--accent-3));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+/* QR / payment panel */
+.tip-focused .qr {
+    border: 10px solid #fff !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: 0 0 0 1px var(--surface-border-strong), 0 20px 60px -20px rgba(0, 0, 0, 0.9), var(--glow-gold);
+}
+#payment summary {
+    border: 1px solid var(--surface-border) !important;
+    background: rgba(255, 255, 255, 0.025);
+    border-radius: var(--radius-sm) !important;
+    transition: all 0.2s ease;
+}
+#payment summary:hover {
+    border-color: rgba(255, 70, 96, 0.4) !important;
+    background: rgba(255, 70, 96, 0.05);
+}
+.payment-apps a {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)) !important;
+    border: 1px solid var(--surface-border) !important;
+    border-radius: 12px !important;
+    font-weight: 700;
+    transition: transform 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.payment-apps a:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 70, 96, 0.5) !important;
+    box-shadow: 0 10px 25px -10px rgba(255, 70, 96, 0.5);
+}
+
+/* Notices / errors */
+.notice {
+    background: linear-gradient(135deg, rgba(255, 70, 96, 0.1), rgba(255, 70, 96, 0.03)) !important;
+    border: 1px solid rgba(255, 70, 96, 0.3) !important;
+    border-left: 3px solid var(--accent) !important;
+    border-radius: var(--radius-sm) !important;
+    color: #ffd4dc !important;
+    backdrop-filter: blur(10px);
+}
+.error {
+    color: #ff8b9d !important;
+    font-weight: 600;
+}
+
+/* Pending / success text */
+.pending {
+    background: linear-gradient(100deg, var(--accent-mint), #a5f3cf);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+}
+
+/* Footer */
+footer {
+    border-top: 1px solid var(--surface-border) !important;
+    color: var(--ink-mute) !important;
+    font-size: 11px !important;
+    letter-spacing: 1.5px !important;
+}
+
+/* -------- Admin dashboard polish -------- */
+.admin-header {
+    background: rgba(13, 14, 20, 0.72) !important;
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border-bottom: 1px solid var(--surface-border) !important;
+}
+nav {
+    background: rgba(10, 11, 16, 0.6) !important;
+    border-right: 1px solid var(--surface-border) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+nav button {
+    color: var(--ink-dim);
+    padding: 10px 14px !important;
+    border-radius: 10px !important;
+    transition: all 0.18s ease;
+    font-weight: 600;
+}
+nav button:hover {
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: var(--ink) !important;
+}
+nav button.active {
+    background: linear-gradient(135deg, rgba(255, 70, 96, 0.2), rgba(255, 138, 61, 0.1)) !important;
+    color: #fff !important;
+    border-left: 3px solid var(--accent) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.panel {
+    background: var(--surface) !important;
+    border: 1px solid var(--surface-border) !important;
+    border-radius: var(--radius-md) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-md);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.panel:hover {
+    border-color: var(--surface-border-strong) !important;
+}
+
+.metric {
+    background: linear-gradient(135deg, rgba(28, 30, 42, 0.7), rgba(18, 20, 32, 0.9)) !important;
+    border: 1px solid var(--surface-border) !important;
+    border-radius: var(--radius-md) !important;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.metric::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.3s ease;
+}
+.metric:hover {
+    transform: translateY(-2px);
+    border-color: var(--surface-border-strong) !important;
+    box-shadow: var(--shadow-lg);
+}
+.metric:hover::before { opacity: 1; }
+.metric span { color: var(--ink-mute) !important; font-weight: 600; letter-spacing: 0.5px; }
+.metric b {
+    background: linear-gradient(135deg, #fff, var(--accent-3));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    letter-spacing: -0.03em !important;
+    font-variant-numeric: tabular-nums;
+}
+.metric.accent {
+    background: linear-gradient(135deg, rgba(255, 70, 96, 0.18), rgba(32, 25, 31, 0.9)) !important;
+    border-color: rgba(255, 70, 96, 0.3) !important;
+}
+
+/* Tables */
+table th {
+    color: var(--ink-mute) !important;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 10.5px;
+    padding: 14px 12px !important;
+    border-bottom: 1px solid var(--surface-border) !important;
+}
+table td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+    padding: 14px 12px !important;
+}
+table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.badge {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid var(--surface-border) !important;
+    border-radius: 6px !important;
+    padding: 4px 9px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px;
+    font-size: 10.5px !important;
+    text-transform: uppercase;
+}
+.badge.VERIFIED, .badge.MANUAL {
+    background: linear-gradient(135deg, rgba(74, 212, 163, 0.2), rgba(74, 212, 163, 0.05)) !important;
+    border-color: rgba(74, 212, 163, 0.4) !important;
+    color: #a5f3cf !important;
+}
+.badge.PENDING {
+    background: linear-gradient(135deg, rgba(255, 209, 102, 0.2), rgba(255, 209, 102, 0.05)) !important;
+    border-color: rgba(255, 209, 102, 0.4) !important;
+    color: #ffe9ad !important;
+}
+.badge.REFUNDED, .badge.REJECTED {
+    background: linear-gradient(135deg, rgba(255, 70, 96, 0.18), rgba(255, 70, 96, 0.04)) !important;
+    border-color: rgba(255, 70, 96, 0.4) !important;
+    color: #ffb8c3 !important;
+}
+.badge.EXPIRED {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: var(--ink-mute) !important;
+}
+
+/* Progress bar (goals) */
+.progress {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-radius: 999px !important;
+    height: 12px !important;
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+.progress i {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3)) !important;
+    border-radius: 999px !important;
+    box-shadow: 0 0 20px rgba(255, 70, 96, 0.5);
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative;
+}
+.progress i::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: ace-shimmer 2.4s linear infinite;
+}
+@keyframes ace-shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Toast */
+.toast {
+    background: var(--surface-strong) !important;
+    border: 1px solid var(--surface-border-strong) !important;
+    border-left: 3px solid var(--accent) !important;
+    border-radius: var(--radius-md) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: var(--shadow-xl);
+    animation: ace-toast-in 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.3);
+}
+@keyframes ace-toast-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Code / tokens */
+.code {
+    background: rgba(10, 11, 16, 0.85) !important;
+    border: 1px solid var(--surface-border) !important;
+    border-radius: var(--radius-sm) !important;
+    font-family: var(--font-mono) !important;
+    color: #ffe9ad;
+}
+
+/* Login page */
+.login {
+    background: var(--surface) !important;
+    border: 1px solid var(--surface-border-strong);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-xl);
+}
+
+/* Chart bars */
+.chart-bar {
+    background: linear-gradient(180deg, var(--accent), var(--accent-2)) !important;
+    border-radius: 6px 6px 0 0 !important;
+    box-shadow: 0 0 15px rgba(255, 70, 96, 0.3);
+}
+
+/* -------- Overlays (OBS browser source) -------- */
+/* Alert cards get a premium glass look with a subtle gold rim */
+body[data-kind="alert"] #stage > * {
+    position: relative;
+}
+
+/* -------- Dialogs / modals -------- */
+.dialog {
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    background: rgba(0, 0, 0, 0.6) !important;
+}
+.dialog .panel {
+    animation: ace-modal-in 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.3);
+}
+@keyframes ace-modal-in {
+    from { opacity: 0; transform: translateY(16px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* -------- Confetti canvas -------- */
+#ace-confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* -------- Scrollbar polish -------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.14);
+    background-clip: padding-box;
+}
+
+/* ============ v1.5.1 Premium Polish ============
+   End-user visible upgrades: hero avatar aura, section stagger-in, micro-interactions,
+   SVG noise overlay, skeleton loaders, tier badges, celebration success screen. */
+
+/* --- Noise/grain overlay to kill gradient banding --- */
+.tip-focused::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.08;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.65'/></svg>");
+}
+.tip-focused > * { position: relative; z-index: 2; }
+
+/* --- Hero avatar aura: slow pulsing radial glow behind the mark/image --- */
+.tip-focused .creator { position: relative; }
+.tip-focused .creator::before {
+    content: "";
+    position: absolute;
+    top: -40px; left: 50%;
+    width: 320px; height: 320px;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(255, 70, 96, 0.22) 0%, rgba(122, 92, 255, 0.14) 35%, transparent 65%);
+    filter: blur(28px);
+    animation: hero-aura 8s cubic-bezier(.4,0,.6,1) infinite alternate;
+    pointer-events: none;
+    z-index: 0;
+}
+.tip-focused .creator > * { position: relative; z-index: 1; }
+@keyframes hero-aura {
+    0% { opacity: 0.6; transform: translateX(-50%) scale(0.9); }
+    100% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+}
+.tip-focused .creator-mark,
+.tip-focused #avatar {
+    animation: avatar-breath 6s ease-in-out infinite;
+    will-change: transform;
+}
+@keyframes avatar-breath {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-3px) scale(1.015); }
+}
+.tip-focused #avatar {
+    border-radius: 24px;
+    width: 96px; height: 96px;
+    object-fit: cover;
+    border: 2px solid rgba(255, 209, 102, 0.4);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.3), 0 20px 50px rgba(255, 70, 96, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+/* --- Section stagger-in on load --- */
+.tip-focused .creator,
+.tip-focused .tip-card,
+.tip-focused .supporters {
+    animation: section-in 0.7s cubic-bezier(.2,.9,.3,1) both;
+}
+.tip-focused .tip-card { animation-delay: 0.08s; }
+.tip-focused .supporters { animation-delay: 0.16s; }
+@keyframes section-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Amount chip bounce + CTA depress micro-interactions --- */
+.tip-focused .presets button {
+    transition: transform 0.18s cubic-bezier(.4,0,.2,1), background 0.2s, box-shadow 0.2s, color 0.2s, border-color 0.2s;
+}
+.tip-focused .presets button:active:not(:disabled) {
+    transform: translateY(1px) scale(0.96);
+}
+.tip-focused .primary {
+    transition: transform 0.14s cubic-bezier(.4,0,.2,1), box-shadow 0.2s, filter 0.2s;
+    will-change: transform;
+}
+.tip-focused .primary:active:not(:disabled) {
+    transform: translateY(2px) scale(0.985);
+    filter: brightness(0.95);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5), inset 0 2px 6px rgba(0,0,0,0.25);
+}
+.tip-focused .voice-card:active,
+.tip-focused .sound-choices button:active,
+.tip-focused .soundboard-tile:active:not(.locked) {
+    transform: translateY(1px) scale(0.98);
+}
+
+/* --- Supporter tier badge that lights up with the current amount --- */
+.tier-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    margin: 10px 0 0;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, rgba(255,70,96,0.12), rgba(122,92,255,0.1));
+    border: 1px solid var(--surface-border);
+    color: var(--ink-dim);
+    transition: all 0.35s cubic-bezier(.4,0,.2,1);
+    font-variant-numeric: tabular-nums;
+}
+.tier-badge .tier-icon { font-size: 14px; filter: grayscale(0.8); transition: filter 0.3s; }
+.tier-badge.tier-1 { color: #c5a97a; border-color: rgba(197,169,122,0.45); background: linear-gradient(135deg, rgba(197,169,122,0.12), rgba(197,169,122,0.04)); }
+.tier-badge.tier-1 .tier-icon { filter: none; }
+.tier-badge.tier-2 { color: #e0e0e0; border-color: rgba(224,224,224,0.45); background: linear-gradient(135deg, rgba(224,224,224,0.14), rgba(224,224,224,0.04)); box-shadow: 0 4px 14px rgba(224,224,224,0.1); }
+.tier-badge.tier-2 .tier-icon { filter: none; }
+.tier-badge.tier-3 {
+    color: #fff;
+    border-color: transparent;
+    background: linear-gradient(135deg, var(--accent-3) 0%, var(--accent-2) 45%, var(--accent) 100%);
+    box-shadow: 0 6px 20px rgba(255,70,96,0.35), 0 0 0 1px rgba(255,209,102,0.4);
+    animation: tier-pulse 2.4s ease-in-out infinite;
+}
+.tier-badge.tier-3 .tier-icon { filter: drop-shadow(0 0 8px rgba(255,209,102,0.8)); }
+@keyframes tier-pulse {
+    0%, 100% { box-shadow: 0 6px 20px rgba(255,70,96,0.35), 0 0 0 1px rgba(255,209,102,0.4); }
+    50% { box-shadow: 0 10px 30px rgba(255,70,96,0.55), 0 0 0 1px rgba(255,209,102,0.7); }
+}
+
+/* --- Skeleton loader: shimmer rows for Top supporters while loading --- */
+.skeleton-row {
+    display: flex; gap: 12px; align-items: center;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border-radius: var(--radius-md);
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--surface-border);
+}
+.skeleton-bar {
+    height: 14px;
+    border-radius: 99px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.04) 100%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.6s linear infinite;
+}
+.skeleton-bar.rank { width: 24px; height: 24px; border-radius: 6px; }
+.skeleton-bar.name { flex: 1 1 100px; max-width: 180px; }
+.skeleton-bar.amount { width: 70px; }
+@keyframes skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* --- Celebration success screen (post-payment VERIFIED state) --- */
+.celebration {
+    position: relative;
+    text-align: center;
+    padding: 40px 24px;
+}
+.celebration::before {
+    content: "";
+    position: absolute; inset: -40px -24px;
+    background: radial-gradient(circle at center, rgba(255, 209, 102, 0.18), transparent 60%);
+    pointer-events: none;
+    animation: celebration-glow 2.4s ease-out;
+}
+@keyframes celebration-glow {
+    0% { opacity: 0; transform: scale(0.6); }
+    40% { opacity: 1; }
+    100% { opacity: 0; transform: scale(1.4); }
+}
+.celebration .celebrate-ring {
+    width: 92px; height: 92px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 44px;
+    background: linear-gradient(135deg, var(--accent-mint) 0%, var(--accent-3) 100%);
+    box-shadow: 0 0 0 8px rgba(74,212,163,0.12), 0 10px 40px rgba(74,212,163,0.4);
+    animation: celebrate-pop 0.6s cubic-bezier(.3,1.6,.4,1) both;
+    position: relative;
+    z-index: 2;
+}
+@keyframes celebrate-pop {
+    0% { transform: scale(0.1) rotate(-15deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+.celebration h2 {
+    background: linear-gradient(100deg, #fff 0%, var(--accent-3) 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0 0 8px;
+    font-size: clamp(26px, 3.5vw, 36px);
+}
+.celebration .receipt-card {
+    display: inline-block;
+    margin: 20px auto;
+    padding: 16px 24px;
+    background: rgba(10, 11, 18, 0.6);
+    border: 1px dashed rgba(255, 209, 102, 0.35);
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-dim);
+    letter-spacing: 1px;
+}
+.celebration .receipt-card b {
+    display: block;
+    color: var(--accent-3);
+    font-size: 14px;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+}
+.celebration .share-row {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 14px;
+}
+
+/* --- Floating confetti burst anchor for VERIFIED --- */
+.celebration-confetti {
+    pointer-events: none;
+    position: fixed; inset: 0;
+    z-index: 999;
+}
+
+/* -------- Reduced motion -------- */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* -------- Responsive tightening (mobile viewers tipping on phone) -------- */
+@media (max-width: 700px) {
+    .tip-focused .tip-card { padding: 24px; border-radius: 20px; }
+    .tip-focused .amount-input input { font-size: 28px !important; }
+    .tip-focused .creator h1 { font-size: 28px; }
+    .tip-focused .creator-mark { width: 76px; height: 76px; line-height: 74px; }
+    .primary { padding: 15px 18px !important; }
+    .soundboard-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .soundboard-pills { padding-bottom: 4px; }
+}
+
+/* ============ Soundboard (v1.5.0) ============
+   Streamer-curated meme/SFX gallery on the public tip page. Grid of glass tiles with
+   per-sound min-tip, category pills, search, favorites, locked state, preview-play.
+   The whole surface uses the same tokens as .tip-card so it visually belongs. */
+
+.soundboard-section {
+    margin-top: 24px;
+    padding: 22px;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(145deg, rgba(28,30,42,.76), rgba(18,20,34,.90));
+    border: 1px solid var(--surface-border);
+    box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,.04);
+    position: relative;
+    overflow: hidden;
+}
+.soundboard-section::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(60% 50% at 50% 0%, rgba(255,70,96,.08), transparent 60%);
+    pointer-events: none;
+}
+.soundboard-section .section-line h3 { display: flex; align-items: center; gap: 10px; }
+.pill-tag {
+    display: inline-block; padding: 2px 10px; font-size: 10px; letter-spacing: 1.2px;
+    text-transform: uppercase; font-weight: 700;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    color: #fff; border-radius: 99px;
+    box-shadow: 0 2px 10px rgba(255,70,96,.35);
+}
+#soundboard-counter { font-size: 11px; color: var(--ink-dim); letter-spacing: 1px; text-transform: uppercase; }
+#soundboard-note:empty { margin: 0; }
+
+.soundboard-controls {
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    margin: 14px 0 10px;
+}
+.soundboard-search {
+    flex: 1 1 180px;
+    padding: 11px 14px;
+    background: rgba(10,11,18,.65);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-md);
+    color: var(--ink);
+    font: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .15s, background .15s;
+}
+.soundboard-search:focus { border-color: var(--accent); background: rgba(10,11,18,.9); }
+
+.soundboard-pills {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    max-width: 100%;
+}
+.soundboard-pills .pill {
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--surface-border);
+    border-radius: 99px;
+    color: var(--ink-dim);
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+}
+.soundboard-pills .pill:hover { color: var(--ink); border-color: var(--surface-border-strong); background: rgba(255,255,255,.07); }
+.soundboard-pills .pill.selected {
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-cool) 100%);
+    border-color: transparent;
+    box-shadow: 0 4px 14px rgba(255,70,96,.3);
+}
+
+/* Tier meter — live progress bar showing what the current amount unlocks */
+.tier-meter {
+    display: flex; align-items: center; gap: 10px;
+    margin: 8px 0 14px;
+    font-size: 12px; color: var(--ink-dim);
+}
+.tier-bar {
+    flex: 1 1 auto;
+    height: 6px;
+    background: rgba(255,255,255,.06);
+    border-radius: 99px;
+    overflow: hidden;
+}
+.tier-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-mint) 0%, var(--accent-3) 60%, var(--accent) 100%);
+    border-radius: 99px;
+    transition: width .4s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 0 10px rgba(74,212,163,.4);
+}
+.tier-label { white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* Grid */
+.soundboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
+}
+.soundboard-grid::-webkit-scrollbar { width: 6px; }
+.soundboard-grid::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 99px; }
+
+/* Tile */
+.soundboard-tile {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 10px 12px;
+    min-height: 118px;
+    text-align: center;
+    background: linear-gradient(160deg, rgba(28,30,42,.65), rgba(16,18,28,.85));
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-md);
+    color: var(--ink);
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform .18s cubic-bezier(.4,0,.2,1), border-color .18s, box-shadow .18s, background .18s;
+}
+.soundboard-tile:hover:not(.locked) {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+    background: linear-gradient(160deg, rgba(42,24,34,.75), rgba(20,16,30,.95));
+    box-shadow: 0 10px 24px rgba(0,0,0,.5), 0 0 0 1px rgba(255,70,96,.25);
+}
+/* The “Streamer’s default” tile stays outlined while a pick is selected; selected, it looks like any other tile. */
+.soundboard-tile.default-tile { border-color: var(--accent); }
+.soundboard-tile.default-tile:not(.selected) { border-style: dashed; }
+.soundboard-tile.selected {
+    border-color: transparent;
+    background: linear-gradient(160deg, rgba(255,70,96,.22), rgba(122,92,255,.18));
+    box-shadow: 0 0 0 2px var(--accent-3), 0 10px 30px rgba(255,70,96,.3);
+}
+.soundboard-tile.locked {
+    opacity: .4;
+    cursor: not-allowed;
+    filter: saturate(.5);
+}
+.soundboard-tile.locked .tile-emoji { filter: grayscale(1); }
+.soundboard-tile.locked:hover { transform: none; }
+.soundboard-tile .tile-emoji {
+    font-size: 32px;
+    line-height: 1;
+    display: block;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,.4));
+}
+.soundboard-tile .tile-name {
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: .2px;
+    color: var(--ink);
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.soundboard-tile .tile-min {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    color: var(--accent-3);
+    padding: 2px 8px;
+    background: rgba(255,209,102,.1);
+    border-radius: 99px;
+    display: inline-block;
+    width: fit-content;
+    justify-self: center;
+    font-variant-numeric: tabular-nums;
+}
+/* A tapped locked tile says what unlocks it on its price chip for a moment (the note below the grid can be off-screen on phones). */
+.soundboard-tile.locked.nudge { opacity: .85; filter: none; }
+.soundboard-tile.nudge .tile-min { color: #1a0d06; background: linear-gradient(135deg, #ffd166, #ff8a3d); animation: sb-nudge .42s cubic-bezier(.36,.07,.19,.97); }
+@keyframes sb-nudge { 20%, 60% { transform: translateX(-4px); } 40%, 80% { transform: translateX(4px); } }
+@media (prefers-reduced-motion: reduce) { .soundboard-tile.nudge .tile-min { animation: none; } }
+.soundboard-tile .tile-fav {
+    position: absolute; top: 6px; right: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    color: var(--accent-3);
+    opacity: .6;
+    transition: opacity .15s, transform .15s;
+    user-select: none;
+}
+.soundboard-tile .tile-fav:hover { opacity: 1; transform: scale(1.2); }
+.soundboard-tile .tile-play {
+    position: absolute; top: 6px; left: 8px;
+    font-size: 12px;
+    width: 22px; height: 22px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,.35);
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s, background .15s;
+}
+.soundboard-tile:hover .tile-play { opacity: 1; }
+.soundboard-tile .tile-play:hover { background: var(--accent); color: #fff; }
+
+/* Playing — animated equalizer bars overlay */
+.soundboard-tile.playing::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(74,212,163,.08) 70%, transparent);
+    animation: sb-sweep 1.4s linear infinite;
+    pointer-events: none;
+}
+@keyframes sb-sweep { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+.soundboard-tile.playing .tile-play { opacity: 1; background: var(--accent-mint); color: #0a0f0d; }
+
+.soundboard-clear {
+    display: block;
+    margin: 10px auto 0;
+    font-size: 12px;
+}
+
+/* Admin table enhancements */
+.sb-emoji-cell { font-size: 22px; }
+.sb-audio-cell { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+
+/* v1.5.7 — Sounds manager table badges + layout */
+.sounds-table { font-size: 13px; margin-top: 12px; }
+.sounds-table .sound-filename { font-family: Consolas, monospace; font-size: 12px; max-width: 280px; overflow-wrap: anywhere; }
+.sounds-table .sound-codec { text-transform: uppercase; letter-spacing: 1px; color: #c9cbd5; font-size: 11px; }
+.sounds-table .sound-duration { font-variant-numeric: tabular-nums; color: #a5a6b0; }
+.badge.badge-ok { color: #b8edce; background: #203a30; border: 1px solid #2d7a4f; }
+.badge.badge-bad { color: #ffbcc9; background: #4a1d28; border: 1px solid #9c3850; }
+.badge.badge-fixed { color: #ffe1a8; background: #3d3016; border: 1px solid #8a6a26; cursor: help; }
+.sounds-table button.small { padding: 5px 10px; font-size: 12px; }
+
+/* ============ v1.5.9 UI polish ============ */
+
+/* OBS overlays must stay transparent. overlay.html loads this file AFTER overlay.css, and the
+   body gradient above would otherwise paint an opaque backdrop over the game capture (OBS's
+   default custom CSS only clears background-color, not background-image). */
+body[data-kind] { background: transparent !important; min-height: 0 !important; }
+
+/* Tip card gradient ring: animate the gradient angle, never the element. Rotating the ring itself
+   swept its straight edges across the card as stray diagonal lines. Desktop-only animation keeps
+   phones (most viewers) from repainting the card every frame. */
+@property --ace-ring { syntax: '<angle>'; inherits: false; initial-value: 180deg; }
+.tip-focused .tip-card { border-color: transparent; }
+.tip-focused .tip-card::before {
+    inset: 0;
+    background: conic-gradient(from var(--ace-ring) at 50% 50%, rgba(255, 70, 96, 0.6), rgba(122, 92, 255, 0.3), rgba(255, 209, 102, 0.42), rgba(255, 70, 96, 0.6));
+    animation: none;
+    transform: none;
+}
+@media (min-width: 801px) and (prefers-reduced-motion: no-preference) {
+    .tip-focused .tip-card::before { animation: ace-ring-spin 16s linear infinite; }
+}
+@keyframes ace-ring-spin { to { --ace-ring: 540deg; } }
+
+/* Desktop: creator + top supporters form one column that stays in view beside the long form. */
+@media (min-width: 801px) {
+    .tip-focused .tip-layout { grid-template-areas: 'aside form'; grid-template-rows: auto; }
+    .tip-focused .tip-aside { grid-area: aside; display: flex; flex-direction: column; gap: 28px; min-width: 0; }
+    .tip-focused .tip-aside .community-note { margin-top: -8px; }
+}
+@media (min-width: 801px) and (min-height: 860px) {
+    .tip-focused .tip-aside { position: sticky; top: 104px; }
+}
+/* Phones/tablets: keep the original reading order — creator, form, supporters, note. */
+@media (max-width: 800px) {
+    .tip-focused .tip-aside { display: contents; }
+    .tip-focused .creator { order: 1; }
+    .tip-focused .tip-card { order: 2; }
+    .tip-focused .supporters { order: 3; }
+    .tip-focused .community-note { order: 4; }
+}
+
+/* Voice cards: never split words ("Fema/le"); one column on phones; language sub-line. */
+.voice-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.voice-card { overflow-wrap: normal !important; word-break: normal; }
+.voice-card .voice-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.voice-card .voice-friendly-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.voice-card .voice-sub {
+    font-size: 11.5px; font-weight: 500; color: var(--ink-dim); letter-spacing: 0.1px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.voice-card.selected .voice-sub { color: #ffd9df; }
+@media (max-width: 560px) {
+    .voice-choices { grid-template-columns: 1fr !important; max-height: 360px; }
+}
+
+/* Checkbox rows: the box stays beside its text instead of wrapping onto its own line. */
+.check { flex-wrap: nowrap !important; align-items: flex-start !important; }
+.check input[type=checkbox] { flex: none; margin-top: 2px !important; }
+
+/* Soundboard header: pill and counter never break mid-phrase on narrow screens. */
+.pill-tag, #soundboard-counter { white-space: nowrap; }
+.soundboard-section .section-line { flex-wrap: wrap; row-gap: 8px; }
+
+/* Admin: panels in two-column rows size to their content instead of stretching. */
+.grid2 { align-items: start; }
+
+/* Admin: "Paytm bridge & review" as a pill instead of a bare underlined link. */
+.pill-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin: 0 0 18px; padding: 8px 14px;
+    border: 1px solid var(--surface-border-strong); border-radius: 999px;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--ink) !important; text-decoration: none;
+    font-size: 13px; font-weight: 600;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+.pill-link:hover { border-color: rgba(255, 70, 96, 0.55); background: rgba(255, 70, 96, 0.08); }
+
+/* Native file pickers styled to match the theme. */
+input[type=file] { cursor: pointer; color: var(--ink-dim); font-size: 13px; }
+input[type=file]::file-selector-button {
+    margin-right: 14px; padding: 8px 14px;
+    border: 1px solid var(--surface-border-strong); border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06); color: var(--ink);
+    font: 600 13px var(--font-sans); cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+input[type=file]::file-selector-button:hover { background: rgba(255, 70, 96, 0.14); border-color: rgba(255, 70, 96, 0.5); }
+
+/* Colour pickers: a swatch, not a full-width bar. */
+input[type=color] {
+    display: block; width: 76px !important; height: 44px; padding: 4px !important; cursor: pointer;
+}
+input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
+input[type=color]::-webkit-color-swatch { border: 0; border-radius: 6px; }
+
+/* Sound status badges keep their colours (the generic .badge rule uses !important). */
+.badge.badge-ok { color: #b8edce !important; background: rgba(45, 122, 79, 0.25) !important; border-color: rgba(45, 122, 79, 0.7) !important; }
+.badge.badge-bad { color: #ffbcc9 !important; background: rgba(156, 56, 80, 0.25) !important; border-color: rgba(156, 56, 80, 0.7) !important; }
+.badge.badge-fixed { color: #ffe1a8 !important; background: rgba(138, 106, 38, 0.25) !important; border-color: rgba(138, 106, 38, 0.75) !important; }
+.sounds-table .sound-filename { font-family: var(--font-sans); font-size: 13.5px; }
+.sounds-table .sound-filename .fine { font-family: var(--font-mono); font-size: 11px; color: var(--ink-mute); margin-top: 4px; }
+.sounds-table td .row { gap: 8px; flex-wrap: nowrap; }
+
+/* ============ v1.5.9 admin data screens ============ */
+
+/* Connection pill in the header: green when connected, pulsing red while a stream session is live. */
+.admin-header .status, .admin-header .connection-error {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; letter-spacing: 1.2px; white-space: nowrap;
+    border: 1px solid rgba(74, 212, 163, 0.35); background: rgba(74, 212, 163, 0.08); color: #a5f3cf;
+}
+.admin-header .status::before, .admin-header .connection-error::before {
+    content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 10px currentColor;
+}
+.admin-header .status.live { border-color: rgba(255, 70, 96, 0.5); background: rgba(255, 70, 96, 0.12); color: #ffc2cc; }
+.admin-header .connection-error { border-color: rgba(255, 70, 96, 0.45); background: rgba(255, 70, 96, 0.1); color: #ff9bae; }
+@media (prefers-reduced-motion: no-preference) {
+    .admin-header .status.live::before { animation: ace-live-dot 1.6s ease-in-out infinite; }
+}
+@keyframes ace-live-dot { 50% { opacity: 0.3; } }
+
+/* Buttons placed straight into a panel get breathing room; the primary one is compact, not a slab. */
+.workspace .panel > button { margin: 0 10px 10px 0; }
+.workspace .panel > button.primary { padding: 11px 18px !important; border-radius: 10px !important; }
+button.danger { color: #ffbcc9; border-color: rgba(156, 56, 80, 0.75); background: rgba(74, 29, 40, 0.55); }
+button.danger:hover { background: #70293a; border-color: #b8445f; color: #fff; }
+
+/* Filter toolbars: one control height, sensible widths. */
+.workspace .panel > .row { margin-bottom: 16px; }
+.workspace .panel > .row > input, .workspace .panel > .row > select, .workspace .panel > .row:has(> input, > select) > button { height: 44px; margin: 0; }
+.workspace .panel > .row > input, .workspace .panel > .row > select { padding-top: 0 !important; padding-bottom: 0 !important; font-size: 14px; }
+.workspace .panel > .row:has(> input, > select) > button { padding: 0 16px; }
+.workspace .panel > .row > button { margin: 0; }
+.workspace .panel > .row > select { flex: 0 1 190px; min-width: 140px; }
+.workspace .panel > .row > input[type=date] { flex: 0 1 170px; min-width: 150px; color-scheme: dark; }
+.workspace .panel > .row > input:not([type]), .workspace .panel > .row > input[type=text], .workspace .panel > .row > input[type=search] { flex: 1 1 260px; }
+.workspace .panel > input:not([type]) { max-width: 460px; margin: 6px 0 16px; }
+
+/* Tables: tight cell text, right-aligned money/counts, quiet row actions. */
+td p { margin: 0 0 8px; }
+td .fine { margin: 3px 0 0; font-size: 12px; }
+th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.date-pair, .stack { display: flex; flex-direction: column; gap: 3px; white-space: nowrap; }
+td.num .stack { align-items: flex-end; }
+.date-pair .fine, .stack .fine { margin: 0; }
+td button { background: transparent; border-color: var(--surface-border-strong); color: var(--ink-dim); border-radius: 7px; padding: 5px 10px; }
+td button:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
+td button.danger { color: #ffb3c1; border-color: rgba(156, 56, 80, 0.6); background: transparent; }
+td button.danger:hover { background: rgba(156, 56, 80, 0.25); color: #fff; }
+.panel > .table-wrap + h3, .panel > .table-wrap + .panel { margin-top: 26px; }
+.badge.live { color: #ffc2cc !important; background: rgba(255, 70, 96, 0.14) !important; border-color: rgba(255, 70, 96, 0.5) !important; }
+.badge.EXPIRED { color: #c9cbd5 !important; }
+
+/* Leaderboard rank chips: gold, silver, bronze, then neutral. */
+.rank-chip {
+    display: inline-grid; place-items: center; min-width: 28px; height: 28px; padding: 0 8px;
+    border-radius: 999px; font-weight: 800; font-size: 12px; font-variant-numeric: tabular-nums;
+    background: rgba(255, 255, 255, 0.06); border: 1px solid var(--surface-border); color: var(--ink-dim);
+}
+.rank-chip.r1 { background: linear-gradient(135deg, #ffd166, #ff8a3d); color: #1a0d06; border-color: transparent; box-shadow: 0 0 16px rgba(255, 209, 102, 0.35); }
+.rank-chip.r2 { background: linear-gradient(135deg, #eef1f7, #9aa3b5); color: #12141c; border-color: transparent; }
+.rank-chip.r3 { background: linear-gradient(135deg, #f0a36b, #a5552b); color: #1a0d06; border-color: transparent; }
+
+/* Goal progress: the shimmer stays inside the rounded fill. */
+.progress i { position: relative; overflow: hidden; }
+
+/* Analytics chart: bars sized like bars, readable horizontal date labels. */
+.chart { gap: 10px; height: 220px; padding: 0 4px; margin-top: 8px; }
+.chart-column { max-width: 72px; }
+.chart-column:first-child { margin-left: auto; }
+.chart-column:last-child { margin-right: auto; }
+.chart-bar { max-width: 44px; border-radius: 8px 8px 3px 3px !important; }
+.chart-column small { writing-mode: horizontal-tb; height: auto; white-space: nowrap; margin: 10px 0 8px; font-size: 11px; }
+.chart + .table-wrap { margin-top: 18px; }
+
+/* Audit trail: readable key/value details and plain-language actions. */
+pre.audit {
+    margin: 0; font-family: var(--font-mono); font-size: 11.5px; line-height: 1.55;
+    color: var(--ink-dim); white-space: pre-wrap; max-height: 180px; overflow: auto;
+}
+.audit-action { text-transform: capitalize; font-weight: 600; white-space: nowrap; }
+
+/* ============ v1.5.9 tip page: payment step ============ */
+/* Buttons and lines built by showPayment() become a tidy two-column grid; every state (UPI, demo,
+   closed, celebration) only uses direct children, so nested content is untouched. */
+.tip-focused .tip-card { scroll-margin-top: 88px; }
+.tip-focused #payment:not([hidden]) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 10px; align-items: start; }
+.tip-focused #payment > * { grid-column: 1 / -1; margin: 0; min-width: 0; }
+.tip-focused #payment > p:empty:not(.countdown) { display: none; }
+.tip-focused #payment > .qr { justify-self: center; margin: 4px 0; }
+.tip-focused #payment > a.primary { justify-self: center; width: min(100%, 280px); }
+.tip-focused #payment > details { margin: 4px 0; }
+.tip-focused #payment > input[readonly] { text-align: center; font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.3px; }
+.tip-focused #payment > button { grid-column: auto; align-self: stretch; width: 100%; }
+.tip-focused #payment > button:not(.primary) {
+    min-height: 46px; padding: 10px 14px; font-size: 14px; font-weight: 600; line-height: 1.25;
+    color: var(--ink) !important; background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid var(--surface-border-strong) !important; border-radius: 12px !important;
+}
+.tip-focused #payment > button:not(.primary):hover { background: rgba(255, 255, 255, 0.09) !important; border-color: rgba(255, 70, 96, 0.45) !important; }
+.tip-focused #payment > button.subtle + button.subtle { background: transparent !important; border-color: transparent !important; color: var(--ink-dim) !important; }
+.tip-focused #payment > button.subtle + button.subtle:hover { color: var(--ink) !important; background: rgba(255, 255, 255, 0.04) !important; }
+.tip-focused #payment > button.copied { color: #a5f3cf !important; border-color: rgba(74, 212, 163, 0.55) !important; background: rgba(74, 212, 163, 0.1) !important; }
+@media (max-width: 520px) { .tip-focused #payment > button { grid-column: 1 / -1; } }
+
+/* The exact amount is the hero; the payee is a quiet caption above the QR. */
+.tip-focused #payment > .pay-heading { font-size: 15px; font-weight: 600; letter-spacing: 0.2px; line-height: 1.3; }
+.tip-focused #payment .pay-amount {
+    display: block; margin-top: 6px; font-size: clamp(36px, 10vw, 50px); font-weight: 800;
+    letter-spacing: -0.035em; line-height: 1.05; font-variant-numeric: tabular-nums;
+}
+.tip-focused #payment > .payee { justify-self: center; text-align: center; margin-top: 8px; font-size: 13px; line-height: 1.4; color: var(--ink-dim); letter-spacing: 0.2px; }
+
+/* Waiting is amber with a live dot, never success-green next to "do not pay twice". */
+.tip-focused #payment > .pending {
+    display: flex; align-items: flex-start; gap: 10px; margin-top: 6px; padding: 12px 14px;
+    border-radius: 12px; border: 1px solid rgba(255, 209, 102, 0.24); background: rgba(255, 209, 102, 0.07);
+    -webkit-background-clip: border-box; background-clip: border-box; -webkit-text-fill-color: currentColor;
+    color: #ffe3a3; font-size: 14px; font-weight: 600; line-height: 1.5;
+}
+.tip-focused #payment > .pending::before {
+    content: ''; flex: 0 0 8px; height: 8px; margin-top: 7px; border-radius: 50%;
+    background: var(--accent-3); animation: ace-pay-pulse 1.8s ease-out infinite;
+}
+.tip-focused #payment[data-closed] > .pending::before { animation: none; background: var(--ink-mute); }
+@keyframes ace-pay-pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 209, 102, 0.55); } 100% { box-shadow: 0 0 0 9px rgba(255, 209, 102, 0); } }
+
+/* Countdown: a chip on the "ONE LAST STEP" row instead of a pink line at the very bottom. */
+.tip-focused #payment > .eyebrow { grid-row: 1; align-self: center; }
+.tip-focused #payment > .countdown {
+    grid-row: 1; justify-self: end; align-self: center; padding: 6px 12px; border-radius: 999px;
+    border: 1px solid var(--surface-border-strong); background: rgba(255, 255, 255, 0.05); color: var(--ink);
+    font-size: 12px; font-weight: 700; letter-spacing: 0.3px; line-height: 1.2; white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.tip-focused #payment > .countdown:empty { visibility: hidden; }
+.tip-focused #payment > .countdown.urgent { color: #ffb8c3; border-color: rgba(255, 70, 96, 0.55); background: rgba(255, 70, 96, 0.1); }
+@media (max-width: 359px) { .tip-focused #payment > .countdown { grid-row: auto; justify-self: center; } }
+
+/* Phones: cards fill the column instead of shrink-wrapping (and overflowing on the right). */
+@media (max-width: 800px) { .tip-focused .tip-layout { align-items: stretch; } }
+
+/* Desktop header: background, blur and hairline run edge to edge; content stays aligned. */
+@media (min-width: 701px) {
+    .tip-focused .site-header { max-width: none; padding-left: max(36px, calc((100% - 1028px) / 2)); padding-right: max(36px, calc((100% - 1028px) / 2)); }
+}
+
+/* "VALORANT · YOUTUBE" is a caption, not a selected/interactive chip. */
+.tip-focused .creator-detail span, .tip-focused .creator-detail span:hover {
+    background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; color: #d5758a;
+}
+
+/* QR frame as white padding: no grey anti-aliasing specks at the inner corners. */
+.tip-focused .qr { border: 0 !important; padding: 10px; background: #fff; }
+
+/* ============ v1.5.9 overlays: sources created at the old, too-small sizes ============ */
+@media (max-height: 260px) {
+    body[data-kind="top3"] #stage, body[data-kind="recent"] #stage { padding-top: 6px; }
+    body[data-kind="top3"] .board-row, body[data-kind="recent"] .board-row { padding: 11px 0; }
+}
+@media (max-height: 369px) { body[data-kind="recent"] .board-row:nth-of-type(n+4) { display: none; } }
+@media (max-height: 279px) { body[data-kind="goal"] #stage > .widget ~ .widget { display: none; } }
+
+/* ============ v1.5.9 admin: configuration screens ============ */
+
+/* DOM-built sibling buttons have no whitespace between them; give them a gutter and one height. */
+.workspace .panel > form > button + button, .dialog .panel > button + button { margin-left: 10px; }
+.workspace :is(.panel, .panel > form, .page-title .row) > button { vertical-align: middle; border-radius: 10px; }
+.workspace .primary:not(.wide), .dialog .primary:not(.wide) { padding: 11px 18px !important; border-radius: 10px !important; }
+.workspace .panel > button + .notice { margin-top: 16px; }
+.workspace .primary { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 6px 18px -8px rgba(255, 70, 96, 0.55); }
+.workspace .primary:hover { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 10px 24px -8px rgba(255, 70, 96, 0.6); }
+@media (min-width: 701px) {
+    .workspace .panel > form > .primary.wide { display: flex; width: fit-content; min-width: 180px; margin: 24px 0 0; padding: 12px 26px !important; border-radius: 10px !important; }
+}
+/* Row calls to action (e.g. Upload audio) get a brand-gradient outline; red fills stay reserved for danger. */
+.workspace td .primary:not(.wide) {
+    background: linear-gradient(#171923, #171923) padding-box, linear-gradient(135deg, var(--accent), var(--accent-2)) border-box !important;
+    border: 1px solid transparent !important; color: #fff !important; font-weight: 700;
+    box-shadow: none; padding: 6px 12px !important; font-size: 12px; border-radius: 8px !important;
+}
+.workspace td .primary:not(.wide):hover { background: linear-gradient(#2e1a25, #2e1a25) padding-box, linear-gradient(135deg, var(--accent), var(--accent-2)) border-box !important; transform: none; }
+.workspace td .primary::after { content: none; }
+
+/* Hints are neutral in the control room; red stays for money and danger (errors use .error/toasts). */
+.workspace .notice {
+    background: rgba(255, 255, 255, 0.035) !important; border: 1px solid var(--surface-border) !important;
+    border-left: 3px solid rgba(255, 209, 102, 0.6) !important; color: var(--ink-dim) !important; line-height: 1.6;
+}
+.workspace .notice strong { color: var(--ink); }
+
+/* On/off settings as switches, aligned with the other fields. Still native checkboxes. */
+.workspace .panel > form > .check { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: center !important; gap: 12px; font-weight: 600; margin: 16px 0 6px; }
+.workspace .panel > form > .check > input[type=checkbox] {
+    -webkit-appearance: none; appearance: none; flex: 0 0 40px; width: 40px !important; height: 22px !important;
+    margin: 0 !important; padding: 0 !important; border-radius: 999px !important;
+    background: rgba(255, 255, 255, 0.12) !important; border: 1px solid var(--surface-border-strong) !important;
+    position: relative; cursor: pointer; transition: background 0.2s, border-color 0.2s;
+}
+.workspace .panel > form > .check > input[type=checkbox]::before {
+    content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%;
+    background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45); transition: transform 0.2s;
+}
+.workspace .panel > form > .check > input[type=checkbox]:checked { background: linear-gradient(135deg, var(--accent), var(--accent-2)) !important; border-color: transparent !important; }
+.workspace .panel > form > .check > input[type=checkbox]:checked::before { transform: translateX(18px); }
+@media (forced-colors: active) { .workspace .panel > form > .check > input[type=checkbox] { -webkit-appearance: auto; appearance: auto; } }
+
+/* Short numeric and colour fields share a row on wide screens, three to a row. Any other field ends a run of them, and the
+   3rd, 6th and 9th field of each run end a row (1.6.4: counted per run, so a pair after a switch keeps its gap). */
+@media (min-width: 1100px) {
+    .workspace .panel > form > label:has(> input:is([type=number], [type=color])) { display: inline-block; vertical-align: bottom; width: calc((100% - 44.5px) / 3); margin-right: 22px; }
+    .workspace .panel > form > :is(label:has(> input:is([type=number], [type=color])):first-child, :not(label:has(> input:is([type=number], [type=color]))) + label:has(> input:is([type=number], [type=color])))
+        + label:has(> input:is([type=number], [type=color])) + label:has(> input:is([type=number], [type=color])),
+    .workspace .panel > form > :is(label:has(> input:is([type=number], [type=color])):first-child, :not(label:has(> input:is([type=number], [type=color]))) + label:has(> input:is([type=number], [type=color])))
+        + label:has(> input:is([type=number], [type=color])) + label:has(> input:is([type=number], [type=color]))
+        + label:has(> input:is([type=number], [type=color])) + label:has(> input:is([type=number], [type=color])) + label:has(> input:is([type=number], [type=color])),
+    .workspace .panel > form > :is(label:has(> input:is([type=number], [type=color])):first-child, :not(label:has(> input:is([type=number], [type=color]))) + label:has(> input:is([type=number], [type=color])))
+        + label:has(> input:is([type=number], [type=color])) + label:has(> input:is([type=number], [type=color]))
+        + label:has(> input:is([type=number], [type=color])) + label:has(> input:is([type=number], [type=color])) + label:has(> input:is([type=number], [type=color]))
+        + label:has(> input:is([type=number], [type=color])) + label:has(> input:is([type=number], [type=color])) + label:has(> input:is([type=number], [type=color])) { margin-right: 0; }
+}
+input[type=color]::-webkit-color-swatch { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22); }
+
+/* Design studio: previews in a card at the top, readable captions. */
+.design-previews {
+    gap: 24px; margin: 0 0 22px; padding: 22px 24px; background: var(--surface); border: 1px solid var(--surface-border);
+    border-radius: var(--radius-md); box-shadow: var(--shadow-md);
+}
+.design-previews::before { content: 'Live preview'; flex: 1 1 100%; grid-column: 1 / -1; margin-bottom: -8px; font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+.design-preview h3 { margin: 0 0 10px; font-size: 11px; font-weight: 800; letter-spacing: 1.6px; text-transform: uppercase; color: var(--ink-mute); }
+.design-preview iframe { display: block; border-color: var(--surface-border-strong); }
+/* Two columns (horizontal | vertical) that fill the card; each row's frames share one height. */
+.design-previews { display: grid; grid-template-columns: minmax(0, 1fr) 270px; align-items: stretch; }
+.design-preview { display: flex; flex-direction: column; min-width: 0; overflow: visible; }
+.design-preview > iframe { flex: 1 1 auto; }
+.preview-clip {
+    position: relative; width: 100%; overflow: hidden; border: 1px solid var(--surface-border-strong); border-radius: 12px;
+    background: repeating-conic-gradient(#20232b 0% 25%, #292d35 0% 50%) 50% / 24px 24px;
+}
+.preview-clip > iframe { position: absolute; top: 0; left: 0; max-width: none !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; transform-origin: 0 0; }
+@media (max-width: 900px) {
+    .design-previews { grid-template-columns: minmax(0, 1fr); }
+    .design-preview.vertical { width: 270px; max-width: 100%; }
+}
+#content:has(> .design-previews) { display: flex; flex-direction: column; }
+#content:has(> .design-previews) > .page-title { order: -2; }
+#content > .design-previews { order: -1; }
+
+/* OBS links: one line each with a Copy button (click-select still copies the full URL). */
+.workspace .code { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0 0 22px; }
+.obs-link { display: flex; align-items: center; gap: 10px; margin: 0 0 22px; }
+.obs-link .code { flex: 1; min-width: 0; margin: 0; }
+.workspace .panel > h3 + .code { margin-top: -6px; }
+/* Link labels read as captions under the card title, not as nine more headings. */
+.workspace .panel > h3:has(+ .obs-link) { font-size: 13.5px; font-weight: 600; letter-spacing: 0.1px; color: var(--ink-dim); margin: 0 0 8px; }
+.workspace .panel > h3 + .obs-link { margin: 0 0 18px; }
+
+/* TTS: collapsible engine guide; sample controls grouped. */
+.engine-guide summary { cursor: pointer; font-weight: 700; list-style: none; }
+.engine-guide summary::-webkit-details-marker { display: none; }
+.engine-guide summary::after { content: '+'; float: right; color: var(--ink-mute); }
+.engine-guide[open] summary::after { content: '\2013'; }
+.engine-guide p { margin: 12px 0 0; color: var(--ink-dim); font-size: 14px; }
+.voice-actions { margin: 14px 0 4px; }
+
+/* Soundboard table: preview and upload buttons line up with the row text. */
+.workspace table:has(.sb-audio-cell) td { vertical-align: middle; }
+/* Sound library: the default badge, inline pick and price controls, the starter-slots fold and the toolbar note. */
+.badge.badge-default { color: #ffc2cc !important; background: rgba(255, 70, 96, 0.14) !important; border-color: rgba(255, 70, 96, 0.5) !important; }
+.library-table .badges { display: inline-flex; flex-wrap: wrap; gap: 6px; margin-left: 8px; vertical-align: 1px; }
+.library-table .badges:empty { display: none; }
+.library-table td .fine { margin: 4px 0 0; font-size: 12px; font-weight: 400; color: var(--ink-mute); }
+.library-table input[type=checkbox] { width: 18px !important; height: 18px; margin: 0 !important; padding: 0 !important; accent-color: var(--accent); cursor: pointer; }
+.library-table input[type=checkbox]:disabled { cursor: not-allowed; opacity: 0.45; }
+.library-table input[type=number] { display: inline-block; width: 96px; margin: 0; padding: 7px 10px !important; font-size: 13px; }
+.library-slots summary { cursor: pointer; font-weight: 700; margin: 14px 0 6px; }
+.workspace .panel > .library-toolbar { margin-top: 12px; }
+.library-toolbar > .fine { margin: 0; }
+.workspace .panel > h3.library-older { margin-top: 28px; }
+
+/* Sounds/media: viewer sound chips, status badges, table cells that never split words. */
+.field-label { font-size: 14px; font-weight: 600; margin: 18px 0 10px; }
+.sound-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.sound-chip {
+    display: inline-flex; align-items: center; gap: 8px; max-width: 100%; padding: 6px 8px 6px 12px;
+    border: 1px solid var(--surface-border-strong); border-radius: 999px; background: rgba(255, 255, 255, 0.03);
+    transition: border-color 0.2s, background 0.2s;
+}
+.sound-chip label { display: inline-flex; align-items: center; gap: 8px; margin: 0; font-weight: 600; font-size: 13.5px; cursor: pointer; min-width: 0; }
+.sound-chip input[type=checkbox] { width: 16px !important; height: 16px; margin: 0 !important; padding: 0 !important; flex: none; accent-color: var(--accent); }
+.sound-chip .chip-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+.sound-chip.on { border-color: rgba(255, 70, 96, 0.45); background: rgba(255, 70, 96, 0.08); }
+.sound-chip.missing .chip-name { color: #ffb8c3; }
+.sound-chip .chip-tag { font-size: 10.5px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; color: #1a0d06; background: linear-gradient(135deg, #ffd166, #ff8a3d); }
+.sound-chip .chip-action { padding: 3px 9px; font-size: 11.5px; border-radius: 999px; background: transparent; border-color: var(--surface-border-strong); color: var(--ink-dim); }
+.sound-chip .chip-action:hover { color: var(--ink); background: rgba(255, 255, 255, 0.06); }
+.badge.badge-unknown { color: #d6d8e1 !important; background: rgba(255, 255, 255, 0.06) !important; border-color: rgba(255, 255, 255, 0.18) !important; }
+.sound-status .badges { display: flex; flex-wrap: wrap; gap: 6px; }
+.sounds-table td { overflow-wrap: break-word; }
+.sounds-table button, .sounds-table .badge { white-space: nowrap; overflow-wrap: normal; }
+.sounds-table .sound-filename { min-width: 160px; }
+
+/* Overview: sections inside a panel separate clearly; goal previews breathe. */
+.panel > .table-wrap + h3 { padding-top: 22px; border-top: 1px solid var(--surface-border); }
+.goal-preview { margin: 16px 0 0; }
+.goal-preview .fine { margin: 4px 0 0; font-variant-numeric: tabular-nums; }
+.goal-preview + .goal-preview { margin-top: 20px; }
+
+/* Live activity feed: amount in the metric gold, quiet row actions, Block reads as destructive. */
+.activity-item header b { background: linear-gradient(135deg, #fff, var(--accent-3)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
+.activity-item p.fine { font-size: 12px; color: var(--ink-mute); margin: 2px 0 10px; }
+.activity-item button { padding: 5px 11px; border-radius: 999px; background: transparent; border-color: var(--surface-border); color: var(--ink-dim); }
+.activity-item button:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
+.activity-item button.danger { color: #ffb8c3; border-color: rgba(255, 70, 96, 0.35); }
+.activity-item button.danger:hover { background: rgba(255, 70, 96, 0.12); }
+
+/* Navigation: active marker is an inset bar (no crescent on the rounded corner, no 3px shift). */
+nav button { position: relative; border-left: 0 !important; }
+nav button.active { border-left: 0 !important; }
+nav button.active::before { content: ''; position: absolute; left: 0; top: 9px; bottom: 9px; width: 3px; border-radius: 0 3px 3px 0; background: var(--accent); }
+@media (min-width: 701px) {
+    /* money · alerts & media · insights · setup */
+    nav button:is(:nth-child(7), :nth-child(11), :nth-child(13)) { margin-top: 18px; }
+}
+
+/* Phones: compact header, sticky scrollable tab strip, page title on one row, stacked sound cards. */
+@media (max-width: 700px) {
+    .admin-header { gap: 8px 10px; padding: 12px 16px; align-items: center; }
+    .admin-header .wordmark { font-size: 17px; white-space: nowrap; }
+    .admin-header .wordmark i { display: none; }
+    .admin-header .row { align-items: center; gap: 8px; }
+    .admin-header #signout { padding: 6px 12px; font-size: 13px; }
+    nav {
+        position: sticky; top: 0; z-index: 15; gap: 4px; padding: 8px 32px 8px 12px; border-right: 0 !important; scrollbar-width: none;
+        -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+    }
+    nav::-webkit-scrollbar { display: none; }
+    nav button { flex: none; margin: 0; }
+    nav button.active::before { top: auto; bottom: 3px; left: 14px; right: 14px; width: auto; height: 2px; border-radius: 2px; }
+    .page-title { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+    .page-title h2 { margin: 0; }
+    .page-title .row button { padding: 8px 14px; font-size: 13px; }
+    .page-title .row .primary { padding: 9px 14px !important; }
+    table td { overflow-wrap: break-word; }
+    table th, table td { padding: 11px 8px !important; }
+    table th { white-space: normal; letter-spacing: 0.6px; vertical-align: bottom; }
+    .sounds-table thead { display: none; }
+    .sounds-table, .sounds-table tbody { display: block; }
+    .sounds-table tr { display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 6px 12px; padding: 14px 0; border-bottom: 1px solid var(--surface-border); }
+    .sounds-table td { display: block; padding: 0 !important; border: 0 !important; max-width: none; background: none !important; }
+    .sounds-table td.sound-filename, .sounds-table td.sound-actions { grid-column: 1 / -1; }
+    .sound-chip .chip-name { max-width: 180px; }
+}
+
+/* OBS Activity Dock: tips on the first screen, controls stay reachable while scrolling. */
+.dock .admin-header { padding: 8px 12px; }
+.dock .admin-header .wordmark i { display: none; }
+.dock .admin-header .row { align-items: center; }
+.dock .page-title { flex-direction: row; align-items: center; margin-bottom: 10px; }
+.dock .page-title h2 { font-size: 17px; margin: 0; }
+.dock .page-title p { display: none; }
+.dock .page-title .row button { padding: 7px 12px !important; font-size: 12px; }
+.dock .metrics { margin: 10px 0; gap: 6px; }
+.dock .metric { padding: 9px 12px; }
+.dock .metric span { font-size: 11px; }
+.dock .metric b { font-size: 17px; margin-top: 4px; }
+.dock .grid2 > .panel:first-child > .row:first-of-type {
+    position: sticky; top: 0; z-index: 5; margin: 0 -12px 4px; padding: 8px 12px;
+    background: rgba(16, 17, 25, 0.96); border-bottom: 1px solid var(--surface-border);
+}
+.dock .activity-item { padding: 12px 0; }
+
+/* Paytm bridge page (templates/paytm_bridge.html). */
+#auto, #ack, #inbox label > input[type=checkbox] {
+    display: inline-block; width: 18px !important; height: 18px; margin: 0 10px 0 0 !important; padding: 0 !important;
+    vertical-align: -4px; accent-color: var(--accent);
+}
+label:has(> #auto), label:has(> #ack) { font-weight: 500; line-height: 1.5; margin: 16px 0 0; }
+main > a[href="/admin"]:first-child {
+    display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border: 1px solid var(--surface-border-strong);
+    border-radius: 999px; background: rgba(255, 255, 255, 0.03); color: var(--ink-dim); font-size: 13px; font-weight: 600; text-decoration: none;
+}
+main > a[href="/admin"]:first-child::before { content: '\2190'; }
+main > a[href="/admin"]:first-child:hover { color: var(--ink); border-color: rgba(255, 70, 96, 0.55); }
+main > a[href="/admin"] + h1 { font-size: clamp(30px, 3vw, 40px); letter-spacing: -0.03em; margin: 18px 0 12px; }
+#mode { display: inline-block; padding: 4px 11px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: 1.4px; color: #ffe9ad; background: rgba(255, 209, 102, 0.1); border: 1px solid rgba(255, 209, 102, 0.35); }
+#mode:empty { display: none; }
+#rotate, #enable, #disable { margin: 4px 10px 14px 0; }
+#inbox .panel > button { margin: 12px 10px 0 0; }
+
+/* Long feeds scroll inside their panel so the Overview columns stay balanced; the OBS dock and phones keep one page scroll. */
+@media (min-width: 701px) {
+    body:not(.dock) .activity-feed { max-height: min(68vh, 760px); overflow-y: auto; overscroll-behavior: contain; padding-right: 10px; margin-right: -10px; }
+}
+
+/* ============ v1.5.9 admin: data screens, round 4 ============ */
+/* Empty date filters read as placeholders, not values (the inputs are required only for this). */
+.workspace .panel > .row > input[type=date]:invalid::-webkit-datetime-edit { color: var(--ink-mute); }
+/* Medals and badges centred on their rows; the rank column only as wide as a medal. */
+.workspace table:has(.rank-chip) td { vertical-align: middle; }
+.workspace table:has(.rank-chip) :is(th, td):first-child { width: 64px; }
+.workspace .badge { line-height: 1; }
+/* Activity items: the date and the action group share a line when they fit; otherwise the group drops below as a unit. */
+body.admin .activity-item { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+body.admin .activity-item > header, body.admin .activity-item > p:not(.fine) { flex: 0 0 100%; margin: 0; }
+body.admin .activity-item > p.fine { margin: 0 auto 0 0; white-space: nowrap; }
+.activity-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.activity-actions button { margin: 0 !important; }
+.activity-item button { border-radius: 8px; }
+/* Header, page and toolbar buttons: the same size and weight as the rest of the control room. */
+#signout, .workspace .page-title .row > button:not(.primary):not(.danger), .workspace .panel > .row > button:not(.primary):not(.danger),
+.workspace .panel > button:not(.primary):not(.danger), .workspace .panel > form > button:not(.primary):not(.danger), .workspace .obs-link > button {
+    font-size: 14px; font-weight: 600; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--surface-border-strong); border-radius: 10px;
+}
+#signout:hover, .workspace .page-title .row > button:not(.primary):not(.danger):hover, .workspace .panel > .row > button:not(.primary):not(.danger):hover,
+.workspace .panel > button:not(.primary):not(.danger):hover, .workspace .panel > form > button:not(.primary):not(.danger):hover, .workspace .obs-link > button:hover {
+    background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 70, 96, 0.45);
+}
+.workspace .primary { font-size: 14px; }
+.workspace .panel > button.danger { font-size: 14px; font-weight: 600; }
+#signout { padding: 7px 14px; font-size: 13px; }
+/* Navigation stays in view on long pages; the divider moves to the workspace so it still runs full height. */
+@media (min-width: 701px) {
+    .admin-shell > nav { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; border-right: 0 !important; }
+    .admin-shell > .workspace { border-left: 1px solid var(--surface-border); }
+}
+/* Transactions: a message and its actions side by side. */
+.workspace td > div:has(> p + button) { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.workspace td > div:has(> p + button) > p { margin: 0; }
+.workspace td > div:has(> p + button) > button { flex: none; margin: -3px 0 0; }
+/* Audit: long trails scroll inside the panel under a pinned header row (this tab is not auto-redrawn). */
+.workspace .panel:has(pre.audit) > .table-wrap { max-height: 72vh; overflow: auto; }
+.workspace .panel:has(pre.audit) th { position: sticky; top: 0; z-index: 1; background: #12131a; box-shadow: inset 0 -1px 0 var(--surface-border); }
+pre.audit { font-family: var(--font-sans); font-size: 12.5px; overflow-wrap: break-word; }
+/* Analytics: a baseline under the bars and the value on hover. */
+.chart { border-bottom: 0 !important; background: linear-gradient(var(--surface-border-strong), var(--surface-border-strong)) left bottom 28px / 100% 1px no-repeat; }
+.chart-column small { height: 20px; line-height: 20px; margin: 8px 0 0 !important; }
+.chart-bar { position: relative; }
+.chart-bar.zero { background: var(--surface-border-strong) !important; box-shadow: none !important; }
+.chart-column:hover .chart-bar::after { content: attr(data-v); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); font-size: 11px; font-weight: 700; color: var(--ink); white-space: nowrap; pointer-events: none; }
+
+/* ============ v1.5.9 tip page, round 4 ============ */
+/* Soundboard: phones show every tile (a nested scroller hid the 4th row); desktop lets a 4th row peek. */
+.soundboard-grid { max-height: 400px; }
+@media (max-width: 700px) { .soundboard-grid { max-height: none; overflow: visible; } }
+/* Touch screens have no hover, so the tile preview button is always shown there. */
+@media (hover: none) { .soundboard-tile .tile-play { opacity: .9; width: 28px; height: 28px; top: 6px; left: 6px; } }
+/* Gender as an inset bar: a 3px border on a rounded card bends into a crescent and beat the selected colour. */
+.voice-card.voice-male, .voice-card.voice-female, .voice-card.voice-any { border-left: 1px solid var(--surface-border) !important; }
+.voice-card.selected { border-left-color: var(--accent) !important; }
+.voice-card::before { content: ''; position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; border-radius: 0 3px 3px 0; background: var(--voice-bar, transparent); }
+.voice-card.voice-male { --voice-bar: rgba(59, 130, 246, 0.75); }
+.voice-card.voice-female { --voice-bar: rgba(236, 72, 153, 0.75); }
+.voice-card.voice-any { --voice-bar: rgba(148, 163, 184, 0.6); }
+/* Gold badge: dark text, like the other gold chips. */
+.tier-badge.tier-3 { color: #1a0d06; }
+.tier-badge.tier-3 .tier-icon { filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45)); }
+/* The alert-sound block is a card like the soundboard above it. */
+.tip-focused .sound-section { padding: 22px; margin-top: 16px; border: 1px solid var(--surface-border); border-radius: var(--radius-lg); background: linear-gradient(145deg, rgba(28, 30, 42, 0.76), rgba(18, 20, 34, 0.9)); box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.04); }
+.tip-focused .sound-section h3, .soundboard-section .section-line h3 { font-size: 16px; }
+.soundboard-section .section-line h3 { margin: 0; }
+.sound-choices button { font-weight: 600; }
+.sound-preview { border-radius: 999px; border-color: var(--surface-border-strong); color: var(--ink-dim); font-weight: 600; padding: 8px 14px; }
+.voice-choices, .sound-choices, .soundboard-grid { margin-inline: -4px; }
+/* No browser stepper inside the amount hero, no resize grip on the message. */
+.tip-focused .amount-input input { -moz-appearance: textfield; appearance: textfield; }
+.tip-focused .amount-input input::-webkit-inner-spin-button, .tip-focused .amount-input input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.tip-focused textarea { resize: none; }
+/* "Try opening an installed UPI app": a styled disclosure, and app buttons without the red CTA glow. */
+#payment summary { list-style: none; display: flex; align-items: center; justify-content: space-between; min-height: 46px; padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer; }
+#payment summary::-webkit-details-marker { display: none; }
+#payment summary::after { content: '+'; font-size: 18px; line-height: 1; color: var(--ink-mute); }
+#payment details[open] > summary::after { content: '\2013'; }
+.payment-apps a.primary { box-shadow: none; font-size: 14px; padding: 12px !important; }
+.payment-apps a.primary::after { content: none; }
+/* Celebration: the intended large title, and buttons that match the payment step. */
+.tip-focused .celebration h2 { font-size: clamp(28px, 3.2vw, 34px); }
+.celebration .share-row > button { min-height: 48px; padding: 12px 22px !important; border-radius: 12px !important; font-size: 15px; font-weight: 700; }
+.celebration .share-row > .subtle { color: var(--ink) !important; background: rgba(255, 255, 255, 0.05) !important; border-color: var(--surface-border-strong) !important; }
+/* Accents stay red-to-orange (violet and mint read as a different brand, the meter as a danger bar). */
+.soundboard-pills .pill.selected { background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+.tier-fill { background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3)); box-shadow: 0 0 10px rgba(255, 70, 96, 0.4); }
+.soundboard-tile.selected { background: linear-gradient(160deg, rgba(255, 70, 96, 0.22), rgba(255, 138, 61, 0.14)); }
+.celebration .celebrate-ring { background: linear-gradient(140deg, #3a1420, #1a0d14); box-shadow: 0 0 0 1px rgba(255, 70, 96, 0.5), 0 0 0 8px rgba(255, 70, 96, 0.1), 0 10px 40px rgba(255, 70, 96, 0.35); }
+/* Phones: soundboard and alert sound use the card's full width; category pills swipe on one row. */
+@media (max-width: 560px) {
+    .soundboard-section, .tip-focused .sound-section { margin-inline: -12px; padding: 18px 14px; }
+    .soundboard-pills { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-inline: -14px; padding-inline: 14px; }
+    .soundboard-pills::-webkit-scrollbar { display: none; }
+}
+/* Desktop: card, header and footer share one rail; the aura glows behind the avatar, not the heading. */
+@media (min-width: 801px) {
+    .tip-focused .tip-layout { justify-content: space-between; }
+    .tip-focused .creator::before { left: 46px; top: -90px; }
+}
+@media (min-width: 701px) { .tip-focused .site-header { align-items: center; padding-inline: max(36px, calc((100% - 1020px) / 2)); } }
+.tip-focused footer { max-width: 1080px; }
+
+/* ============ v1.5.9 admin: configuration screens, round 4 ============ */
+/* Dropdowns: the same height and inset as text fields, with a quiet chevron instead of the OS arrow. */
+select, select:focus {
+    -webkit-appearance: none; appearance: none; line-height: 1.2; padding-right: 44px !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23a7a9b8' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important; background-position: right 16px center !important;
+}
+select option { background: #15161e; color: var(--ink); }
+@media (forced-colors: active) { select, select:focus { -webkit-appearance: auto; appearance: auto; background-image: none !important; } }
+/* Upload fields read as drop zones, not as empty text boxes. */
+.workspace input[type=file] { border: 1px dashed rgba(255, 255, 255, 0.18) !important; background: rgba(255, 255, 255, 0.02) !important; padding: 16px !important; border-radius: 12px !important; }
+.workspace input[type=file]:hover { border-color: rgba(255, 138, 61, 0.55) !important; background: rgba(255, 138, 61, 0.05) !important; }
+/* Buttons that follow a field, note or table get room above them (~, so a row of buttons stays level). */
+.workspace .panel > form > label ~ button, .workspace .panel > :is(.fine, .notice, div) ~ button { margin-top: 16px; }
+/* Goals: the intro clears the first card, cards are evenly padded, Edit/Delete are compact row actions. */
+.workspace .panel > .fine + .panel { margin-top: 16px; }
+.workspace .panel > .goal-preview:first-child { margin-top: 0; }
+.workspace .panel > .panel:last-child { margin-bottom: 0; }
+.workspace .panel > .panel > .fine ~ button { margin: 14px 8px 0 0; padding: 7px 14px; }
+.workspace .panel > .panel > button.danger { background: transparent; border-color: rgba(156, 56, 80, 0.6); color: #ffb3c1; font-weight: 600; }
+.workspace .panel > .panel > button.danger:hover { background: rgba(156, 56, 80, 0.25); border-color: #b8445f; color: #fff; }
+/* Uploaded sounds: the table sits under the title like every other table (the gap is only for a warning above it). */
+.table-wrap:first-child > .sounds-table { margin-top: 0; }
+/* Row upload buttons match the height of the Preview/Edit buttons beside them. */
+.workspace td .primary:not(.wide) { padding: 5px 12px !important; }
+
+/* ============ v1.5.9 phones and OBS dock, round 4 ============ */
+@media (max-width: 700px) {
+    /* Sound library rows become cards: seven columns cannot fit a phone. */
+    .library-table thead { display: none; }
+    .library-table, .library-table tbody { display: block; }
+    .library-table tr {
+        display: grid; grid-template-columns: 30px auto auto 1fr; align-items: center; gap: 2px 8px; padding: 14px 0;
+        grid-template-areas: "emo name name pick" "emo cat min min" "audio audio audio audio" "act act act act";
+        border-bottom: 1px solid var(--surface-border);
+    }
+    .library-table td { display: block; padding: 0 !important; border: 0 !important; max-width: none; text-align: left !important; background: none !important; }
+    .library-table td:nth-child(1) { grid-area: emo; align-self: start; }
+    .library-table td:nth-child(2) { grid-area: name; font-weight: 700; overflow-wrap: anywhere; }
+    .library-table td:nth-child(3) { grid-area: cat; }
+    .library-table td:nth-child(4) { grid-area: pick; display: flex; align-items: center; gap: 6px; }
+    .library-table td:nth-child(4)::after { content: 'Viewers can pick'; font-size: 12px; font-weight: 400; color: var(--ink-mute); white-space: nowrap; }
+    .library-table td:nth-child(5) { grid-area: min; }
+    .library-table td:is(:nth-child(3), :nth-child(5)) { font-size: 12px; color: var(--ink-mute); }
+    .library-table td:nth-child(5)::before { content: '\B7\A0Min tip \20B9'; }
+    .library-table td:nth-child(6) { grid-area: audio; margin-top: 10px; }
+    .library-table td:nth-child(7) { grid-area: act; margin-top: 8px; }
+    .library-table .sb-audio-cell { flex-wrap: wrap; }
+    /* At a glance: long money headers may wrap, so all four columns fit. */
+    table th.num { white-space: normal; }
+    /* Tab strip: the active tab is scrolled into view; the last visible tab fades into the edge (the bar itself stays opaque). */
+    nav { -webkit-mask-image: none; mask-image: none; padding-right: 12px; background: rgba(10, 11, 16, 0.92) !important; }
+    nav button:last-of-type { margin-right: 44px; }
+    nav::after { content: ''; position: sticky; right: -12px; flex: 0 0 56px; margin: 0 -12px 0 -56px; pointer-events: none; background: linear-gradient(90deg, rgba(10, 11, 16, 0), rgba(10, 11, 16, 0.96) 70%); }
+    /* Live activity controls: one even row of compact buttons. */
+    .workspace .panel > .activity-controls { flex-wrap: nowrap; gap: 8px; }
+    .workspace .panel > .activity-controls > button:not(.primary):not(.danger) { flex: 1 1 auto; min-width: 0; height: 38px; padding: 0 10px; font-size: 13px; white-space: nowrap; }
+    /* Uploaded sounds: the first card sits under the heading like the other cards. */
+    .sounds-table tr:first-child { padding-top: 4px; }
+}
+@media (min-width: 380px) and (max-width: 700px) { .glance td:first-child { white-space: nowrap; } }
+.dock .workspace .panel > .activity-controls > button:not(.primary):not(.danger) { flex: 1 1 auto; height: 34px; padding: 0 10px; font-size: 12.5px; }
+/* Overview: one 22px rhythm between stacked cards; no divider under the last tip. */
+body.admin .grid2 > .panel { margin-bottom: 0; }
+body.admin .grid2 { margin-bottom: 22px; }
+.activity-feed > .activity-item:last-child { border-bottom: 0; padding-bottom: 4px; }
+/* Paytm bridge page: helper text reads as help, the endpoint as code, the mode as a label. */
+#mode { text-transform: uppercase; letter-spacing: 1px; }
+main:has(> #mode) > p:not(#mode):not(#status) { color: var(--ink-dim); max-width: 74ch; }
+main:has(> #mode) > .panel > p:has(> label > #recipient), main:has(> #mode) > .panel > p:last-of-type { font-size: 13px; line-height: 1.6; color: var(--ink-dim); }
+main:has(> #mode) > .panel > p > label { color: var(--ink); }
+#endpoint { font: 500 13px var(--font-mono); padding: 3px 8px; border-radius: 6px; background: rgba(10, 11, 16, 0.85); border: 1px solid var(--surface-border); color: #ffe9ad; overflow-wrap: anywhere; }
+main:has(> #mode) button:not(.primary):not(.danger) { font-size: 14px; font-weight: 600; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--surface-border-strong); border-radius: 10px; }
+main:has(> #mode) button:not(.primary):not(.danger):hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 70, 96, 0.45); }
+/* The OBS dock keeps its compact End session; phones get a slightly smaller page-title button. */
+.dock .page-title .row > button:not(.primary):not(.danger) { font-size: 12px; }
+@media (max-width: 700px) { body:not(.dock) .workspace .page-title .row > button:not(.primary):not(.danger) { font-size: 13px; } }
+/* Tip page: the category pills swipe across the card's full inner width on phones. */
+@media (max-width: 560px) { .soundboard-pills { flex: 0 0 calc(100% + 28px); max-width: none; } }
+/* Tip page hover states that the round-4 overrides had flattened. */
+.voice-card:is(.voice-male, .voice-female, .voice-any):not(.selected):hover { border-left-color: var(--surface-border-strong) !important; }
+.sound-preview:hover { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 70, 96, 0.45); color: var(--ink); }
+.celebration .share-row > .subtle:hover { background: rgba(255, 255, 255, 0.09) !important; border-color: rgba(255, 70, 96, 0.45) !important; }
+
+/* ============ 1.6.2 volume sliders, pronunciations, what the voice reads ============ */
+/* Range inputs opt out of the text-box look every other input gets. */
+input[type=range] { display: inline-block; width: 180px; max-width: 100%; height: 24px; margin: 0; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; accent-color: var(--accent); vertical-align: middle; cursor: pointer; }
+input[type=range]:focus-visible { outline: 2px solid #ff6e89; outline-offset: 3px; }
+input[type=range]:disabled { cursor: not-allowed; opacity: 0.45; }
+label > .range-row { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+label > .range-row input[type=range] { flex: 0 1 320px; width: auto; }
+.range-row output.range-value { min-width: 3.5em; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink-dim); }
+.library-table .sb-audio-cell { flex-wrap: wrap; row-gap: 6px; }  /* the volume slider made it too wide for one line */
+.sb-volume { display: inline-flex; align-items: center; gap: 6px; margin: 0 !important; font-size: 12px; font-weight: 500; color: var(--ink-mute); cursor: pointer; }
+.sb-volume input[type=range] { width: 84px; }
+.sb-volume-value { min-width: 3.2em; font-variant-numeric: tabular-nums; }
+.pron-list { display: grid; gap: 8px; margin: 14px 0; }
+.pron-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.pron-row input { margin: 0; }
+.pron-row button { margin: 0; }
+.voice-reads { margin: 10px 0 0; overflow-wrap: anywhere; }
+/* 1.6.7: the list under the Add sound / Upload image button after several files: long file names wrap instead of widening the page */
+.upload-report { overflow-wrap: anywhere; }
+.workspace .panel .upload-report { margin-top: 16px; }  /* clear of the button above it */
+.upload-report ul { margin: 6px 0 0; padding-left: 20px; }

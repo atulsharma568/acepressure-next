@@ -1,0 +1,55 @@
+# Validation — 1.6.4
+12 October 2026, macOS build machine (Python 3.9 test environment, headless Chrome). Based on the 1.6.3 release.
+
+- Full pytest suite: **870 passed** (800 in 1.6.3). New: `tests/test_release_164.py`, 70 tests, grouped by change:
+  - OBS going live: it starts one session and never ends one, and it needs the overlay key. It stays off when switched off, or for 2 hours after you end a session yourself. Tips made just before going live join the session.
+  - Line breaks and “<3”, and the cut: whole words, no dangling word, numbers kept whole. Also the long test alert and **Send to OBS as a test alert**.
+  - The tip page while a payment waits, and its checks for 2 hours.
+  - Reading in full from ₹X, and **Replay in full**.
+  - **Skip alert**:
+    - it works on both layouts, and a skipped alert never comes back;
+    - the last 20 skips are kept;
+    - a playing alert never expires while the queue behind it waits;
+    - **Block** and **Mute** act on the alert on screen.
+  - The Paytm message preview.
+  - The backup voice: it reads when the engine fails and holds for 2 minutes, and there's silence without one. Also the dashboard's voice lines, the offline voice list, the voice services giving up in time, and the backup not being offered for browser voices.
+  - The Tailscale check in every state (signed out, key expired, stopped, offline, another machine name, Funnel off, wrong port, key expiring soon), and silence when it can't tell.
+  - The filter: whole words (on for new installs, the old way kept on upgrades), filtered names, and blocked supporters as “Anonymous supporter”.
+  - Three short fields to a row in forms.
+- Real Chrome against a local AcePressure (demo mode, throwaway data, no money moved), 80 checks, passed on the source folder and on the extracted ZIP:
+  - The OBS alert page with a stand-in for OBS's page API: going live starts the session and the dashboard says so, and stopping offers **End session**.
+  - Admin → OBS and Admin → TTS:
+    - the new settings save;
+    - “read up to” and “from ₹” keep their gap at 1440 px;
+    - the backup voice panel's wording for browser voices and for Edge.
+  - On the alert page:
+    - **Send to OBS** and the long test alert;
+    - **Replay in full**;
+    - **Skip alert** during the voice and during the sound: the card leaves, and the sound and voice stop;
+    - the voice warning;
+    - filtered names and an anonymous Top 3.
+  - The tip page at 1440 and 390 px: the read-in-full note, the window closing, “Waiting for approval” (also after a reload) and approval.
+  - The Paytm message preview, and the OBS dock at 390 px. No sideways scroll, no overlapping buttons and zero JavaScript exceptions.
+  - Speech and sounds went to recorders, so nothing played. Tailscale was a stand-in program that answers like a signed-out Tailscale.
+- An OBS alert page still running 1.6.3 (not refreshed after the update), 8 checks: alerts show, play and finish. **Skip alert** stops its voice and the card leaves at its usual time, and the next alert plays.
+- Earlier browser checks on 1.6.4:
+  - 1.6.3's: 39 of 40 pass. The other expects the old field order in Admin → TTS, which 1.6.4 changes on purpose.
+  - 1.6.2's: 48 pass.
+- Rollback, 17 checks: 1.6.4, then 1.6.3, then 1.6.4 again on one installation and data folder, with the files copied over as UPDATE_1.6.4.md says. 1.6.3 keeps the session 1.6.4 started and shows a skipped alert as “No alert”.
+- Straight upgrades to 1.6.4 from the 1.6.0, 1.6.1 and 1.6.2 ZIPs, with the files copied over as UPDATE_1.6.4.md says (9 checks each):
+  - settings, tips, sounds and the running session are kept;
+  - the new settings start the upgrade way: whole messages read, the old filter and auto-start on;
+  - alerts play and the pages load.
+- Release ZIP: extracted into an empty folder and checked for:
+  - the manifest and file hashes;
+  - no `.env` or data;
+  - launchers in ASCII with CRLF line endings;
+  - on the extracted copy: the full suite, the 1.6.4 browser check (80), the 1.6.3 alert page check (8), the rollback (17) and the straight upgrades;
+  - a fresh install from the ZIP (41 checks).
+- Not tested here: real payments, the production database, Windows, OBS, Edge, Piper, Tailscale and the iPhone.
+
+Still needs your PC:
+- Go live in OBS once and watch the session start.
+- Press **Skip alert** on a real alert.
+- If you choose a backup voice, press **Listen**.
+- While your tip page opens from a phone on mobile data, the dashboard should show no tip-link warning.

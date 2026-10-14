@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS paytm_bridge (
+ id INTEGER PRIMARY KEY CHECK(id=1), token_hash TEXT NOT NULL DEFAULT '',
+ enabled INTEGER NOT NULL DEFAULT 0, auto_match INTEGER NOT NULL DEFAULT 0,
+ recipient_hash TEXT NOT NULL DEFAULT '',
+ last_seen INTEGER
+);
+INSERT OR IGNORE INTO paytm_bridge(id) VALUES(1);
+CREATE TABLE IF NOT EXISTS paytm_inbox (
+ id INTEGER PRIMARY KEY AUTOINCREMENT, fingerprint TEXT UNIQUE NOT NULL,
+ received INTEGER NOT NULL, payment_minute INTEGER, amount INTEGER,
+ status TEXT NOT NULL, reason TEXT NOT NULL, tip_id TEXT,
+ candidates TEXT NOT NULL DEFAULT '[]', repeats INTEGER NOT NULL DEFAULT 0
+);

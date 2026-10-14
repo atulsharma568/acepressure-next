@@ -1,0 +1,60 @@
+{
+  "reproduced_original_clipping": true,
+  "fixed_checks": [
+    {
+      "width": 700,
+      "card": {
+        "top": 12,
+        "bottom": 102,
+        "height": 90,
+        "width": 676
+      },
+      "text": {
+        "top": 31,
+        "bottom": 56,
+        "height": 25,
+        "width": 627
+      },
+      "track": {
+        "top": 70,
+        "bottom": 83,
+        "height": 13,
+        "width": 627
+      },
+      "fill": {
+        "top": 70,
+        "bottom": 83,
+        "height": 13,
+        "width": 31.34375
+      }
+    },
+    {
+      "width": 390,
+      "card": {
+        "top": 12,
+        "bottom": 91,
+        "height": 79,
+        "width": 366
+      },
+      "text": {
+        "top": 28,
+        "bottom": 48,
+        "height": 20,
+        "width": 331
+      },
+      "track": {
+        "top": 62,
+        "bottom": 75,
+        "height": 13,
+        "width": 331
+      },
+      "fill": {
+        "top": 62,
+        "bottom": 75,
+        "height": 13,
+        "width": 16.546875
+      }
+    }
+  ],
+  "obs_custom_css_workaround_passed": true
+}
