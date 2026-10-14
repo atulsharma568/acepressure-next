@@ -77,20 +77,20 @@ function renderCelebration(box,d){
 }
 function showPayment(){$('#tip-form-wrap').hidden=true;const box=$('#payment');box.hidden=false;delete box.dataset.closed;const heading=el('h2','Pay exactly ','pay-heading');heading.append(el('span',INR(current.requested_paise),'pay-amount'));box.replaceChildren(el('div','ONE LAST STEP','eyebrow'),heading,note('Your support appears as '+INR(current.display_paise)+'. The extra paise identifies this payment. Do not round the amount.'));
 if(current.upi_uri){
+ // 1.6.8: the app buttons come first and stay visible; the QR and copy controls are the fallback.
+ const exact=(current.requested_paise/100).toFixed(2),apps=el('div',undefined,'payment-apps');apps.setAttribute('aria-label','Pay with a UPI app');let lastLaunch=0;
+ const help=note('Tapping an app also copies '+INR(current.requested_paise)+'. If the app opens without the amount, paste it there.','fine app-help');help.id='app-help';help.setAttribute('role','status');
+ for(const app of current.upi_apps||[]){
+  const link=el('a',app.name,'pay-app pay-app-'+app.app);link.href=app.href;
+  link.addEventListener('click',e=>{if(!current||Date.now()>=current.expires*1000){e.preventDefault();closePayment();return;}if(Date.now()-lastLaunch<4000){e.preventDefault();help.textContent='Wait a moment before another attempt. If the app did not open, use the QR or copy controls below.';return;}lastLaunch=Date.now();navigator.clipboard?.writeText(exact).catch(()=>{});help.textContent=INR(current.requested_paise)+' copied. If '+app.name+' opens without the amount, paste it there. Coming back here does not confirm payment.';});apps.append(link);
+ }
  const qr=el('img');qr.className='qr';qr.alt='UPI QR with the exact amount';qr.src='/api/public/tips/'+current.id+'/qr?token='+encodeURIComponent(current.token);
  const save=el('a','Save payment QR','primary');save.href=qr.src;save.download='AcePressure-payment.png';
  const recipient=el('input');recipient.readOnly=true;recipient.value=current.upi_id||'';recipient.setAttribute('aria-label','Receiving UPI ID');
- box.append(el('p','Payee: '+(current.payee_name||''),'payee'),qr,save,note('On this phone: save the QR, open your UPI app, and use its Scan → Photos/Gallery option if available. Or scan this screen using another phone. The QR includes the exact amount; check it before authorizing.','fine'));
+ const copyId=button('Copy UPI ID',()=>copyPayment(current.upi_id,box,copyId)),copyAmount=button('Copy exact amount',()=>copyPayment(exact,box,copyAmount));
+ box.append(el('p','Pay with','pay-with'),apps,help,el('p','or scan the QR','pay-divider'),el('p','Payee: '+(current.payee_name||''),'payee'),qr,save,note('On this phone: save the QR, open your UPI app, and use its Scan → Photos/Gallery option if available. Or scan this screen using another phone. The QR includes the exact amount; check it before authorizing.','fine'));
  if(current.requested_paise>200000)box.append(note('Some apps limit QR payments imported from photos to ₹2,000. If rejected, use a camera scan from another screen or copy the UPI ID and exact amount. Do not split this payment.','fine'));
- const details=el('details'),summary=el('summary','Try opening an installed UPI app'),apps=el('div',undefined,'payment-apps');
- const query=current.upi_uri.split('?')[1];let lastLaunch=0;
- for(const [name,prefix] of [['Google Pay','gpay://upi/pay?'],['PhonePe','phonepe://pay?'],['Paytm','paytmmp://upi/pay?'],['Default app','upi://pay?']]){
-  const link=el('a',name,'primary');link.href=prefix+query;
-  link.addEventListener('click',e=>{if(!current||Date.now()>=current.expires*1000){e.preventDefault();closePayment();return;}if(Date.now()-lastLaunch<8000){e.preventDefault();help.textContent='Wait a moment before another attempt. If the app did not open, use the QR or copy controls.';return;}lastLaunch=Date.now();help.textContent='App launch requested. If '+name+' does not open or shows an error, use the QR or copy controls. Returning here does not confirm payment.';});apps.append(link);
- }
- const help=note('Optional: these links are not supported by every iPhone/browser/app combination. There is no automatic retry or redirect. If opening fails, use the QR or copy controls.','fine');help.id='app-help';help.setAttribute('role','status');details.append(summary,apps,help);
- const copyId=button('Copy UPI ID',()=>copyPayment(current.upi_id,box,copyId)),copyAmount=button('Copy exact amount',()=>copyPayment((current.requested_paise/100).toFixed(2),box,copyAmount));
- box.append(details,recipient,copyId,copyAmount,note('If your app rejects a payment, check its payment history before trying again. Never pay twice for the same tip.','fine'));
+ box.append(recipient,copyId,copyAmount,note('If your app rejects a payment, check its payment history before trying again. Never pay twice for the same tip.','fine'));
 }else box.append(note('DEMO PAYMENT — open Admin → Pending payments to simulate verification.'));
 box.append(el('p','Waiting for payment confirmation. Some payments need creator review; do not pay twice.','pending'),el('p','','fine'),button('Check payment status',manualCheck,'subtle'),button('Back to form',reset,'subtle'));$('.fine',box).dataset.keep='true';const timer=el('p','','countdown');timer.setAttribute('aria-live','off');box.append(timer);revealCard();}
 // 1.6.4: the window closing is calm. The page keeps checking (LATE_FOR) and says so; review: a payment for this tip was seen

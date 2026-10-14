@@ -42,6 +42,12 @@ export type SoundboardItem = {
   volume?: number;
 };
 
+export type UpiApp = {
+  app: string;
+  name: string;
+  href: string;
+};
+
 export type TipPayment = {
   id: string;
   token: string;
@@ -51,6 +57,7 @@ export type TipPayment = {
   status: "PENDING" | "VERIFIED" | "EXPIRED" | "MANUAL" | "REJECTED" | "REFUNDED";
   expires: number;
   upi_uri?: string | null;
+  upi_apps?: UpiApp[];
   upi_id?: string;
   payee_name?: string;
   demo?: boolean;

@@ -253,14 +253,14 @@ def test_long_file_names_wrap_in_the_upload_list():
 
 
 def test_version_and_docs():
-    assert (ROOT / 'VERSION').read_text(encoding='utf-8').strip() == '1.6.7'
+    assert tuple(int(x) for x in (ROOT / 'VERSION').read_text(encoding='utf-8').strip().split('.')) >= (1, 6, 7)
     readme = (ROOT / 'README.md').read_text(encoding='utf-8')
-    assert readme.startswith('**Version 1.6.7 — ') and '(docs/UPDATE_1.6.7.md)' in readme
+    assert '**Version 1.6.7 — ' in readme and '(docs/UPDATE_1.6.7.md)' in readme
     docs = lambda name: (ROOT / 'docs' / name).read_text(encoding='utf-8')
     changelog = docs('CHANGELOG.md')
-    assert changelog.startswith('# 1.6.7 — ') and changelog.index('\n# 1.6.6 — ') < changelog.index('\n# 1.6.5 — ') and '@@' not in changelog
+    assert ('\n' + changelog).count('\n# 1.6.7 — ') == 1 and changelog.index('# 1.6.7 — ') < changelog.index('\n# 1.6.6 — ') < changelog.index('\n# 1.6.5 — ') and '@@' not in changelog
     update = docs('UPDATE_1.6.7.md')
     assert 'tests\\test_release_167.py' in update and 'AcePressure-1.6.6-windows.zip' in update
     assert (ROOT / 'docs' / 'VALIDATION_1.6.7.md').is_file()
-    assert docs('TESTING.md').startswith('## Version 1.6.7 validation') and '@@' not in docs('TESTING.md')
+    assert '## Version 1.6.7 validation' in docs('TESTING.md') and '@@' not in docs('TESTING.md')
     assert '@@' not in docs('VALIDATION_1.6.7.md') and '@@' not in update

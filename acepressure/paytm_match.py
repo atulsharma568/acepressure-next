@@ -4,7 +4,9 @@ from datetime import datetime
 from .domain import IST, money
 
 MONTHS={m:i+1 for i,m in enumerate(['January','February','March','April','May','June','July','August','September','October','November','December'])}
-PATTERN=re.compile(r'Received ₹\s*(?P<amount>[0-9]+(?:\.[0-9]{1,2})?) from (?P<sender>.+?) Deposited in your (?P<bank>.+?) - (?P<suffix>[0-9]{4}) on (?P<day>[0-9]{1,2}) (?P<month>[A-Za-z]+) at (?P<hour>[0-9]{1,2}):(?P<minute>[0-9]{2}) (?P<ampm>AM|PM)')
+# Paytm groups thousands the Indian way (₹1,000.37, ₹10,000.05, ₹1,00,000); any other grouping is not parsed.
+AMOUNT=r'(?:[0-9]{1,3}(?:,[0-9]{2})*,[0-9]{3}|[0-9]+)(?:\.[0-9]{1,2})?'
+PATTERN=re.compile(r'Received ₹\s*(?P<amount>'+AMOUNT+r') from (?P<sender>.+?) Deposited in your (?P<bank>.+?) - (?P<suffix>[0-9]{4}) on (?P<day>[0-9]{1,2}) (?P<month>[A-Za-z]+) at (?P<hour>[0-9]{1,2}):(?P<minute>[0-9]{2}) (?P<ampm>AM|PM)')
 
 def parse_event(text, clock):
     normalized=' '.join(text.split())
@@ -19,7 +21,7 @@ def parse_event(text, clock):
         except ValueError:pass
     if not dates:return None
     minute=min(dates,key=lambda x:abs(x-clock))
-    amount=money(d['amount'])
+    amount=money(d['amount'].replace(',',''))
     if amount<=0:return None
     # Ignore optional client-supplied dates. A retry must not gain a new identity.
     identity='|'.join([str(amount),d['sender'].casefold(),d['bank'].casefold(),d['suffix'],str(minute)])

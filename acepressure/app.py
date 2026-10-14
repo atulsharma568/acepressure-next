@@ -1,7 +1,7 @@
 import csv, hashlib, hmac, io, ipaddress, json, os, re, secrets, threading, time
 from datetime import datetime, timedelta
 from pathlib import Path
-from urllib.parse import urlencode, urlparse
+from urllib.parse import urlparse
 import mimetypes
 import qrcode
 from flask import Flask, request, jsonify, session, send_file, render_template, abort
@@ -11,6 +11,7 @@ from .domain import Store, Problem, clean, now, uid, rows, money, PERIODS, DEFAU
 from .text_filters import normalize_pronunciations
 from .parsers import parse_receipt
 from .readiness import readiness
+from . import upi_links
 from .video import validate_or_fix_audio, sanitize_original_name, sound_labels
 ROOT=Path(__file__).resolve().parent.parent
 
@@ -169,10 +170,12 @@ def create_app(config=None):
                                          'tts_volume':volume_percent(s.get('tts_volume')),'default_volume':default_volume}
     def payment(tip):
         s=store.settings(); demo=app.config['DEMO_MODE']
-        uri=None if demo else 'upi://pay?'+urlencode(dict(pa=s['upi_id'],pn=s['payee_name'],am=f"{tip['requested_paise']/100:.2f}",cu='INR',tn='AcePressure '+tip['id'],tr=tip['id']))
+        note='AcePressure '+tip['id']
+        uri=None if demo else upi_links.standard(s['upi_id'],s['payee_name'],tip['requested_paise'],note,tip['id'])
+        apps=[] if demo else upi_links.app_links(s['upi_id'],s['payee_name'],tip['requested_paise'],note)
         with store.db() as db:
             review,queued=db.execute("SELECT EXISTS(SELECT 1 FROM paytm_inbox WHERE tip_id=? AND status='REVIEW'),EXISTS(SELECT 1 FROM alerts WHERE tip_id=?)",(tip['id'],)*2).fetchone()
-        return {k:tip[k] for k in ['id','token','name','display_paise','requested_paise','status','expires']}|{'upi_uri':uri,'demo':demo,'upi_id':s['upi_id'] if not demo else '', 'payee_name':s['payee_name'] if not demo else '', 'needs_review':bool(review),'alert_queued':bool(queued)}
+        return {k:tip[k] for k in ['id','token','name','display_paise','requested_paise','status','expires']}|{'upi_uri':uri,'upi_apps':apps,'demo':demo,'upi_id':s['upi_id'] if not demo else '', 'payee_name':s['payee_name'] if not demo else '', 'needs_review':bool(review),'alert_queued':bool(queued)}
     @app.post('/api/public/tips')
     def new_tip():
         if not app.config['DEMO_MODE'] and not app.config['PUBLIC_BASE_URL'].startswith('https://'):

@@ -1,3 +1,24 @@
+# 1.6.8 — Clear payment buttons that fill in the amount
+
+You reported that the payment options were hard to see, and that Paytm, PhonePe and Google Pay opened without the amount. Your data, `.env`, sounds and OBS sources are kept. Install steps are in UPDATE_1.6.8.md.
+
+- **Payment step:** “Pay with” and four large buttons (Google Pay, PhonePe, Paytm, Other UPI app) now come first, right under the amount. They were inside a closed “Try opening an installed UPI app” section. The QR, Save QR and the copy buttons follow under “or scan the QR”.
+- **Amount filled in:** PhonePe and Paytm only read the amount from their own link formats, so the old links opened their home screen. PhonePe now opens with `phonepe://native` and Paytm with `paytmmp://cash_wallet` (money transfer), both carrying the exact amount. Google Pay keeps `gpay://upi/pay`. App links no longer carry `tr`, which marks a merchant payment, and every link now writes spaces as `%20` instead of `+`. The QR is unchanged apart from that.
+- **Copied as a backup:** tapping an app button also copies the exact amount (for example 20.76). If an app still opens without it, the note under the buttons says to paste it.
+- **₹1,000 and more:** the Paytm bridge now reads amounts with Indian grouping (₹1,000.37, ₹10,000.05, ₹1,00,000). Before, these notifications went to review with no amount and could not be approved there.
+- The new Next.js tip page (`web/`) has the same buttons and links, read from the server.
+
+## Also fixed
+
+- `Install_Web.bat` stopped right after installing packages, because it ran npm without `call`: `.env.local` was never created. It now also builds the frontend.
+- `Start_Next.bat` failed with “Could not find a production build”: nothing built the frontend. It now builds it once when no build exists.
+- The three web batch files use Windows line endings, like `Install_Piper.bat`.
+
+## Compatibility
+
+- No database change. The tip API adds `upi_apps`; `upi_uri` stays for older pages.
+- The PhonePe and Paytm link formats are not published vendor contracts. Test them on your phone; the QR and copy controls remain the fallback.
+
 # 1.6.7 — Add several sounds or artwork files at once
 
 You asked to upload several files at once in the Sound library and the Design studio. Your data, `.env`, sounds and OBS sources are kept. Install steps are in UPDATE_1.6.7.md.

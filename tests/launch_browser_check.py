@@ -39,13 +39,13 @@ with tempfile.TemporaryDirectory() as temp:
   app.config['DEMO_MODE']=False;app.config['PUBLIC_BASE_URL']='https://tips.example.test'
   with app.store.db(True) as db:
    for k,v in [('upi_id','example@upi'),('payee_name','Example')]:db.execute('UPDATE settings SET value=? WHERE key=?',(json.dumps(v),k))
-  page.goto('http://127.0.0.1:8768/');expect(page.locator('#voice-choices button')).to_have_count(2);page.screenshot(path='/tmp/ace-public-desktop.png',full_page=True);page.set_viewport_size({'width':390,'height':844});page.screenshot(path='/tmp/ace-public-mobile.png',full_page=True);page.locator('#amount').fill('20');page.locator('[name=name]').fill('Browser Viewer');page.locator('#pay-button').click();expect(page.get_by_role('button',name='Copy UPI ID')).to_be_visible();expect(page.get_by_role('button',name='Copy exact amount')).to_be_visible();expect(page.get_by_label('Receiving UPI ID')).to_have_value('example@upi');expect(page.locator('.qr')).to_be_visible();page.wait_for_function('document.querySelector(".qr").naturalWidth > 0');page.locator('#payment summary').click();assert page.get_by_role('link',name='Default app').get_attribute('href').startswith('upi://pay?')
+  page.goto('http://127.0.0.1:8768/');expect(page.locator('#voice-choices button')).to_have_count(2);page.screenshot(path='/tmp/ace-public-desktop.png',full_page=True);page.set_viewport_size({'width':390,'height':844});page.screenshot(path='/tmp/ace-public-mobile.png',full_page=True);page.locator('#amount').fill('20');page.locator('[name=name]').fill('Browser Viewer');page.locator('#pay-button').click();expect(page.get_by_role('button',name='Copy UPI ID')).to_be_visible();expect(page.get_by_role('button',name='Copy exact amount')).to_be_visible();expect(page.get_by_label('Receiving UPI ID')).to_have_value('example@upi');expect(page.locator('.qr')).to_be_visible();page.wait_for_function('document.querySelector(".qr").naturalWidth > 0');expect(page.get_by_role('link',name='Other UPI app')).to_be_visible();assert page.get_by_role('link',name='Other UPI app').get_attribute('href').startswith('upi://pay?')
   from urllib.parse import urlsplit,parse_qs
-  base=page.get_by_role('link',name='Default app').get_attribute('href')
-  for name,scheme in [('Google Pay','gpay'),('PhonePe','phonepe'),('Paytm','paytmmp')]:
-   href=page.get_by_role('link',name=name,exact=True).get_attribute('href')
-   assert urlsplit(href).scheme==scheme
-   assert parse_qs(urlsplit(href).query)==parse_qs(urlsplit(base).query)
+  base=parse_qs(urlsplit(page.get_by_role('link',name='Other UPI app').get_attribute('href')).query)
+  for name,prefix in [('Google Pay','gpay://upi/pay?'),('PhonePe','phonepe://native?'),('Paytm','paytmmp://cash_wallet?')]:
+   link=page.get_by_role('link',name=name,exact=True);expect(link).to_be_visible()  # 1.6.8: shown first, not in a closed section
+   href=link.get_attribute('href');assert href.startswith(prefix)
+   if name!='PhonePe':assert {k:v for k,v in parse_qs(urlsplit(href).query).items() if k!='featuretype'}==base
   page.set_viewport_size({'width':390,'height':844});assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
   captured=page.evaluate('({...current})');calls=[]
   def status_route(route):

@@ -1,3 +1,5 @@
+> **1.6.8:** the app buttons are shown first on the payment step, and PhonePe and Paytm now use their own link formats (`phonepe://native`, `paytmmp://cash_wallet` with `featuretype=money_transfer`) so the amount is filled in. Tapping a button also copies the exact amount. The links are built on the server (`acepressure/upi_links.py`, returned as `upi_apps`). The section below describes 1.1.2.
+
 # Version 1.1.2 — payment-app buttons
 
 Live checkout now shows Google Pay, PhonePe and Paytm separately. The QR remains a standard UPI QR for any compatible scanner. The generic button is labelled Other / default UPI app because Safari may hand it to WhatsApp or another registered handler.

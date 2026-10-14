@@ -5,13 +5,13 @@ import secrets
 import threading
 from flask import request, render_template
 from .domain import Problem, money, now, rows
-from .paytm_match import process_event
+from .paytm_match import AMOUNT, process_event
 
 
 def parse_amount(text):
     # Observed Paytm notification wording. Do not infer a credit from arbitrary amounts.
     match = re.fullmatch(
-        r'Received\s+₹\s*((?:[0-9]{1,3}(?:,[0-9]{3})+|[0-9]+)(?:\.[0-9]{1,2})?)'
+        r'Received\s+₹\s*('+AMOUNT+r')'
         r'\s+from\s+[^\r\n]+[\r\n\s]+Deposited in your\s+[^\r\n]+(?:[\r\n][^\r\n]+)*',
         text.strip())
     if not match:

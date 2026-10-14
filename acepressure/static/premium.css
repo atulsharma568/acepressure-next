@@ -1951,3 +1951,25 @@ label > .range-row input[type=range] { flex: 0 1 320px; width: auto; }
 .upload-report { overflow-wrap: anywhere; }
 .workspace .panel .upload-report { margin-top: 16px; }  /* clear of the button above it */
 .upload-report ul { margin: 6px 0 0; padding-left: 20px; }
+
+/* 1.6.8: UPI app buttons are the first thing on the payment step: large, labelled and always visible. */
+.tip-focused #payment > .pay-with { margin-top: 6px; font-size: 13px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: var(--ink-dim); }
+#payment .payment-apps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0; }
+#payment .payment-apps a.pay-app {
+    display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 56px; padding: 12px 14px;
+    color: var(--ink); font-size: 16px; font-weight: 700; text-align: center; text-decoration: none;
+    background: rgba(255, 255, 255, 0.07) !important; border: 1px solid var(--surface-border-strong) !important; border-radius: 14px !important;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+#payment .payment-apps a.pay-app::before { content: ''; flex: 0 0 10px; height: 10px; border-radius: 50%; background: var(--dot, var(--ink-dim)); }
+#payment .payment-apps a.pay-app-gpay { --dot: conic-gradient(#4285f4 0 25%, #34a853 0 50%, #fbbc05 0 75%, #ea4335 0); }
+#payment .payment-apps a.pay-app-phonepe { --dot: #8a4fe0; }
+#payment .payment-apps a.pay-app-paytm { --dot: #00baf2; }
+#payment .payment-apps a.pay-app-upi { --dot: var(--accent-3); }
+#payment .payment-apps a.pay-app:hover, #payment .payment-apps a.pay-app:focus-visible { border-color: rgba(255, 70, 96, 0.6) !important; background: rgba(255, 70, 96, 0.1) !important; transform: none; }
+#payment .payment-apps a.pay-app:active { transform: scale(0.98); }
+#payment .payment-apps a.pay-app:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tip-focused #payment > .app-help { margin-top: -2px; color: var(--ink-dim); }
+.tip-focused #payment > .pay-divider { display: flex; align-items: center; gap: 12px; margin-top: 10px; color: var(--ink-mute); font-size: 12px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; }
+.tip-focused #payment > .pay-divider::before, .tip-focused #payment > .pay-divider::after { content: ''; flex: 1; height: 1px; background: var(--surface-border-strong); }
+@media (max-width: 300px) { #payment .payment-apps { grid-template-columns: 1fr; } }

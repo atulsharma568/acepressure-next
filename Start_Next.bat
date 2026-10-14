@@ -17,6 +17,18 @@ if not exist ".env" (
  pause
  exit /b 1
 )
+if not exist "web\.next\BUILD_ID" (
+ echo The Next frontend has not been built yet. Building it now, this takes a minute...
+ pushd web
+ call npm run build
+ if errorlevel 1 (
+  popd
+  echo The build failed. Review the error above, then run Install_Web.bat again.
+  pause
+  exit /b 1
+ )
+ popd
+)
 echo Starting the Next.js public front door on port 3000 first...
 start "AcePressure Next frontend" /D "%~dp0web" cmd /c "npm run start -- -p 3000"
 timeout /t 3 /nobreak >nul

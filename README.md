@@ -1,3 +1,7 @@
+**Version 1.6.8 — Clear payment buttons that fill in the amount.** On the payment step, Google Pay, PhonePe, Paytm and Other UPI app are now large buttons at the top instead of a hidden list. PhonePe and Paytm open on their payment screen with the amount filled in, and tapping any of them also copies the exact amount. Paytm notifications for ₹1,000 or more (shown as ₹1,000.37) now match.
+
+See [update instructions](docs/UPDATE_1.6.8.md), [what changed](docs/CHANGELOG.md) and [project handover](docs/CHAT_HANDOVER.md).
+
 **Version 1.6.7 — Add several sounds or artwork files at once.** In Sound library and Design studio, choose several files in the file picker: AcePressure uploads them one after another and then lists anything it couldn't take. Design studio menus also show the names your files were uploaded with.
 
 See [update instructions](docs/UPDATE_1.6.7.md), [what changed](docs/CHANGELOG.md) and [project handover](docs/CHAT_HANDOVER.md).

@@ -210,17 +210,18 @@ function PaymentPanel({
   onReset: () => void;
   onCopy: (value: string) => void;
 }) {
+  const [appHelp, setAppHelp] = useState("Tapping an app also copies the exact amount, in case the app opens without it.");
   const confirmed = payment.status === "VERIFIED" || payment.status === "MANUAL";
   if (confirmed) return <SuccessPanel payment={payment} onReset={onReset} />;
 
   const closed = payment.status !== "PENDING";
   const qr = `/api/public/tips/${encodeURIComponent(payment.id)}/qr?token=${encodeURIComponent(payment.token)}`;
-  const query = payment.upi_uri?.split("?")[1] ?? "";
-  const appLinks = [
-    ["Google Pay", `gpay://upi/pay?${query}`],
-    ["PhonePe", `phonepe://pay?${query}`],
-    ["Paytm", `paytmmp://upi/pay?${query}`]
-  ];
+  const exact = (payment.requested_paise / 100).toFixed(2);
+  const openApp = (name: string) => {
+    // Copy the exact amount as well, in case the app opens without it.
+    navigator.clipboard?.writeText(exact).catch(() => undefined);
+    setAppHelp(`${formatPaise(payment.requested_paise)} copied. If ${name} opens without the amount, paste it there.`);
+  };
 
   return (
     <section className="payment-panel" data-reveal>
@@ -232,6 +233,15 @@ function PaymentPanel({
       {payment.demo ? (
         <div className="notice" role="status">DEMO PAYMENT · Open the private dashboard to simulate the confirmation.</div>
       ) : payment.upi_uri ? (
+        <>
+        <p className="pay-with">Pay with</p>
+        <div className="pay-apps" aria-label="Pay with a UPI app">
+          {(payment.upi_apps ?? []).map((app) => (
+            <a className={`pay-app pay-app-${app.app}`} href={app.href} key={app.app} onClick={() => openApp(app.name)}>{app.name}</a>
+          ))}
+        </div>
+        <p className="pay-app-help" role="status">{appHelp}</p>
+        <p className="pay-divider">or scan the QR</p>
         <div className="payment-surface">
           <div className="qr-frame">
             <Image src={qr} alt="UPI QR with the exact requested amount" width={142} height={142} unoptimized />
@@ -243,14 +253,12 @@ function PaymentPanel({
             <div className="payment-detail"><span>UPI ID</span><strong>{payment.upi_id || "Configured privately"}</strong></div>
             <div className="payment-links">
               <button className="copy-action" onClick={() => onCopy(payment.upi_id || "")} type="button">Copy UPI ID</button>
-              <button className="copy-action" onClick={() => onCopy((payment.requested_paise / 100).toFixed(2))} type="button">Copy amount</button>
+              <button className="copy-action" onClick={() => onCopy(exact)} type="button">Copy amount</button>
               <a href={qr} download="AcePressure-payment.png">Save QR</a>
-            </div>
-            <div className="payment-links" aria-label="Optional UPI apps">
-              {appLinks.map(([name, href]) => <a href={href} key={name}>{name}</a>)}
             </div>
           </div>
         </div>
+        </>
       ) : null}
       {closed ? (
         <div className="notice notice-error" role="alert">

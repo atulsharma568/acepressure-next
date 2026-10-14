@@ -26,12 +26,17 @@ if not exist "web\package-lock.json" (
 )
 
 pushd web
-npm ci
+rem npm is npm.cmd: without CALL this script would stop after it.
+call npm ci
 if errorlevel 1 goto fail
 if not exist ".env.local" copy /y "env.example" ".env.local" >nul
+echo Building the Next frontend for Start_Next.bat...
+call npm run build
+if errorlevel 1 goto fail
 popd
 echo Next frontend installation complete.
-echo Start AcePressure first, then run Start_Web.bat.
+echo Run this file again after every AcePressure update so the frontend is rebuilt.
+echo Start AcePressure first, then run Start_Web.bat or Start_Next.bat.
 pause
 exit /b 0
 

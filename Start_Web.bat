@@ -7,6 +7,6 @@ if not exist "web\node_modules\.bin\next.cmd" (
  exit /b 1
 )
 pushd web
-npm run dev
+call npm run dev
 popd
 if errorlevel 1 pause

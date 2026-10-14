@@ -51,8 +51,8 @@
   },
   {
     "path": "Install_Web.bat",
-    "bytes": 992,
-    "sha256": "8d7b0774744281862480db5b1c021ed3ce325c50131d6bdbe854626c7ef59004"
+    "bytes": 1268,
+    "sha256": "e5ee1c89022c9c87d2ea10221cacfd6c8338a0aed0f417acf67e5e8550d85758"
   },
   {
     "path": "LICENSE",
@@ -71,8 +71,8 @@
   },
   {
     "path": "README.md",
-    "bytes": 23945,
-    "sha256": "913ae5cfdd62b84ad8b1809be3d3ad11580e840d839ff322efe8484bfd9f41c3"
+    "bytes": 24474,
+    "sha256": "68e073572aa9c6ced31f879be7f7a6b412ed9f89b8fc2f2687260c76b7bedd0c"
   },
   {
     "path": "START_HERE.txt",
@@ -101,13 +101,13 @@
   },
   {
     "path": "Start_Next.bat",
-    "bytes": 694,
-    "sha256": "f7c510dfd6aaab2b81342ca20505538dd9c5e9037746e62b19aea3dc61e81fab"
+    "bytes": 1108,
+    "sha256": "2ded0115afda8553f900b71c5580e2194311e38aef6702df198d92ef69d205b9"
   },
   {
     "path": "Start_Web.bat",
-    "bytes": 195,
-    "sha256": "012a01a0ab67cea6e3fb6c4ea84945be500dfea0bc84ee758529b86868cbfe1b"
+    "bytes": 200,
+    "sha256": "691900157940214ff268d3f4433aa3dddc15e565d850cbd438c78e6bb206698d"
   },
   {
     "path": "Stop_Next.bat",
@@ -122,7 +122,7 @@
   {
     "path": "VERSION",
     "bytes": 6,
-    "sha256": "440031e799a6323ba88b40d71261399d1c65380c5b283810bdaf995b703fb499"
+    "sha256": "90af28d20938c6eb31204d9096a5db8b593f1e976c0d4bda63a4821febe47146"
   },
   {
     "path": "acepressure/__init__.py",
@@ -131,8 +131,8 @@
   },
   {
     "path": "acepressure/app.py",
-    "bytes": 61579,
-    "sha256": "65c93e31d9f72587a8acc3e805062412fca121f345c1ca5535c9cfb22ecacf7a"
+    "bytes": 61685,
+    "sha256": "6fdd46a039bd9c5a21be3708fe06cc6eef998ab782051adb23fcfc83c918877a"
   },
   {
     "path": "acepressure/domain.py",
@@ -211,13 +211,13 @@
   },
   {
     "path": "acepressure/paytm_capture.py",
-    "bytes": 4711,
-    "sha256": "7da8aed8593b3ec0acfb4de1ebfc302e07ccd2c98fa06831d54ab6d169784f46"
+    "bytes": 4678,
+    "sha256": "79daa1cc0dab3d3566bff30fb62fabe83e8a7d0af12fa3d4d80d447f6801078d"
   },
   {
     "path": "acepressure/paytm_match.py",
-    "bytes": 4307,
-    "sha256": "999719c6474c383f631ba996881330cc471ecfbfc57d523e052ad0c91cb42c9a"
+    "bytes": 4499,
+    "sha256": "84a454a263fe8786ca7ebdc12c4da82327d20240bf0c90cb8c275c4d6edb5cf7"
   },
   {
     "path": "acepressure/piper_tts_service.py",
@@ -336,8 +336,8 @@
   },
   {
     "path": "acepressure/static/premium.css",
-    "bytes": 98394,
-    "sha256": "11dd2ded52a6e99162e09e99dc3c81f20d4e58911b98faf823ad29d6bdeced97"
+    "bytes": 100631,
+    "sha256": "097fcb029adbc1668e241e2c36b024c1d26b128d7c233bf4cab7dad46146023e"
   },
   {
     "path": "acepressure/static/premium.js",
@@ -346,8 +346,8 @@
   },
   {
     "path": "acepressure/static/public.js",
-    "bytes": 36109,
-    "sha256": "d4c22de4cb722b3e2261f38777dc5aee1eeac573084bb27dd57684622a6ebf16"
+    "bytes": 36105,
+    "sha256": "313fdfc7f0b0afd73c14f6d158c461534cee4e9c17a4b1a9ef01fb50cedfe8d2"
   },
   {
     "path": "acepressure/static/style.css",
@@ -410,6 +410,11 @@
     "sha256": "3c30bfba35ce38acdc8abb625fa5a053845b68d228f65e11d4a9428a3480d78f"
   },
   {
+    "path": "acepressure/upi_links.py",
+    "bytes": 1959,
+    "sha256": "25faaebf711d06c4b46e6353369914161b3106ab37a84c627d0c45c213b1a239"
+  },
+  {
     "path": "acepressure/video.py",
     "bytes": 18999,
     "sha256": "4949609d7645c89f0fd94b1e807a6a9d115fccf59ff4750b308d8101a9e2d01a"
@@ -436,8 +441,8 @@
   },
   {
     "path": "docs/CHANGELOG.md",
-    "bytes": 105674,
-    "sha256": "879e9c1e200f248d2edc54a46fff1bf0bcba44358523347f846d4401a07eb61d"
+    "bytes": 107824,
+    "sha256": "703c48730776c94af71ac8699f176409a54c9efca11d3ad488b6d9eadf8f6cdc"
   },
   {
     "path": "docs/CHAT_HANDOVER.md",
@@ -491,8 +496,8 @@
   },
   {
     "path": "docs/PAYMENT_APPS.md",
-    "bytes": 2321,
-    "sha256": "77da82df9d7dcbf6c91603109a0216c73ec8931ebbb9d94afecb5a4e0951aa71"
+    "bytes": 2719,
+    "sha256": "b618de0db5177419636b4fc233b12e37a960692dc6bb402bc5df22a26a96de19"
   },
   {
     "path": "docs/PAYTM_MATCHING.md",
@@ -568,6 +573,11 @@
     "path": "docs/UPDATE_1.6.7.md",
     "bytes": 3941,
     "sha256": "5e405204d3f917326446e24b98fa3df3663e2195588f778f17da83a5564b5cdb"
+  },
+  {
+    "path": "docs/UPDATE_1.6.8.md",
+    "bytes": 3125,
+    "sha256": "9f1ae25f3b61aaf869edf5d7c78afc34e9b438a948e0669d7c0f078ba040d963"
   },
   {
     "path": "docs/UPGRADE_1_1.md",
@@ -821,8 +831,8 @@
   },
   {
     "path": "tests/launch_browser_check.py",
-    "bytes": 7776,
-    "sha256": "0a13dc155b2e3727e09f141156dfcde6e7c6f9f7c86e0fd2c24ef058a630c64d"
+    "bytes": 7989,
+    "sha256": "230079be4f04120f31664f9c645ea6d52711cda1e7cfeaf0131bfae3814f49fe"
   },
   {
     "path": "tests/paytm_browser_check.py",
@@ -926,8 +936,13 @@
   },
   {
     "path": "tests/test_release_167.py",
-    "bytes": 18680,
-    "sha256": "65b6d0b926f9b48bea73166c03062cecd700824cb2ac364c10d3fcaafe8dc33a"
+    "bytes": 18743,
+    "sha256": "f88515e3b63d91b13d274114ebad5d4d858c79916eecc02e00657cf66c13a0c9"
+  },
+  {
+    "path": "tests/test_release_168.py",
+    "bytes": 5536,
+    "sha256": "fc59a61a51a97119c9f6aefb8bbc30ada59cde3148bc483051e5f2ce4aee58d7"
   },
   {
     "path": "tests/test_release_integrity.py",
@@ -996,8 +1011,8 @@
   },
   {
     "path": "web/app/globals.css",
-    "bytes": 19477,
-    "sha256": "dec24f6f2c9e6896b3c3a0d8dc7ff85c8c747ef08d5c90bf88b5782db96b378f"
+    "bytes": 21147,
+    "sha256": "df15b494cc457940cd7bf0511a5657acd4e2d2f203d567a7674a77e10ba50a02"
   },
   {
     "path": "web/app/layout.tsx",
@@ -1021,8 +1036,8 @@
   },
   {
     "path": "web/components/tip-page.tsx",
-    "bytes": 25368,
-    "sha256": "94b97d708725b39c14dd1ce8ef1649f65b3edebaf61038e0fb1856b555c40bf6"
+    "bytes": 25891,
+    "sha256": "65f66495e0be8ffaf375377acda484b7ce12a655c9ca85e9561d42816fe3b6ae"
   },
   {
     "path": "web/eslint.config.mjs",
@@ -1031,8 +1046,8 @@
   },
   {
     "path": "web/lib/acepressure.ts",
-    "bytes": 3723,
-    "sha256": "26503e37ba90e48b71bad6a22204546e821a7d0185544b6fc0ed7fe475ef87b7"
+    "bytes": 3820,
+    "sha256": "f92ad5698d2537ae7763e1667fb4fd1c9e2ffe81a992ca616cdb26d523ee527f"
   },
   {
     "path": "web/next-env.d.ts",
